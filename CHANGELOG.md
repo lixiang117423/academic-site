@@ -2,6 +2,17 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-15 17:18 — 学术主页实现：Task 4–5 完成（第二个检查点）
+
+- **Task 4 适配层与语言回退**（`c1ec16a` + 修复 `f186a28`）：新增 `src/lib/i18n.ts`（`pick()` 唯一回退入口、`altPath()`）、`src/lib/data-select.ts`（纯函数，不依赖 `astro:content`，故可单测）、`src/lib/data-source.ts`（**全站唯一数据入口**，导出 `getSiteProfile` / `listPublications` / `listResearch` / `listSoftware` / `getCV` 五个冻结访问器）。修复轮解决 1 条重要问题：`listResearch()` 漏映射 `image`，导致 schema 支持的字段经唯一入口永远取不到。测试 25/25。
+- **Task 5 设计令牌与基础布局**（`118380a` + 修复 `c6dba83`）：`src/styles/tokens.css`（与定稿可视稿逐值一致，含 `prefers-color-scheme` 暗色覆写）、`global.css`、`BaseLayout.astro`、`SiteNav.astro`、`LangSwitch.astro`、`SiteFooter.astro`。修复轮解决 1 条重要问题：**导航缺回首页入口**——已把站点名做成指向本语言首页的链接（`/` 与 `/zh/`），未新增第七个导航项。构建通过、无外域 CDN 引用、375px 无横向滚动。
+- **视觉方向定稿**：可视稿 `docs/design-mockups/01_页面设计_初稿.html` 为用户确认的视觉参照；首页采用**方案 A**（名字开场 + 精选论文），方案 B 的编号索引改用于 `/research` 页首，已写入 spec §9.4。
+- **控制端裁定的评审分歧（详见 ledger）**：① 评审称"页脚链接颜色偏离可视稿"——经直接核对可视稿，它只有**元素级** `a { color: var(--accent) }` 与**容器级** `footer.site { color: var(--muted) }`，元素级显式声明优先于继承，可视稿页脚链接实为强调色，实现正确，**不修改**；② 评审称 `LangSwitch` 该用 `pick()`——该标签命名的是目标语言、没有双语回退对象，**不修改**。
+- **过程修正**：Task 3 的实施者曾按项目收尾规则自行往 Obsidian 追加过一条按任务的记录（16:21，仓库外写入）；此后所有派发已明令禁止写项目根以外，会话级记录改由控制端统一写（本人不删除已存在的那条，是否合并由用户决定）。
+- **待用户确认**：新版全局规则要求"会话收尾 Obsidian 与语雀都要写"，本项目此前被指定为只写 Obsidian，本轮仍按此执行；如改为两端都写，需指定语雀归属模块页。
+- **状态**：Task 6–12 未开工（页面层：Home / Publications / Research / Software / CV+About / 404+sitemap / 验收）。恢复入口 `/Users/lixiang/NutstoreFiles/03.编程相关/my_academic_web/.superpowers/sdd/2026-10-15-academic-site-implementation/progress.md`（首行标注 plan 路径；`Task <N>: complete` 行即已完成集合）。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改。
+
 ## 2026-10-15 17:15 — Task 5 复审修复（导航补首页入口 / 记录表去临时探针）
 
 - **Finding 1（Important，控制端裁定为真实缺陷）**：`SiteNav.astro` 没有回首页的入口，Task 6–9 换掉 `index.astro` 后每个内页都成死胡同。修复：把**站点名**做成指向首页的链接放在导航最左（`/` for `en`、`/zh/` for `zh`），文案取 `getSiteProfile()` 的 `name` 经 `pick()` 渲染；**没有**新增第七个「Home」导航项。样式按「身份」而非「导航项」处理：`font-size: var(--step1)`（19px）+ `font-weight: 600`，默认无下划线、颜色沿用 `--text`，hover 走既有的 `a:hover`（强调色 + 下划线），focus 走全局 `a:focus-visible`（2px 强调色外描边）。结构上把语言切换器并入新的 `.nav-links` 包裹层，使桌面端保持「名称在左、链接与语言切换在右」。
