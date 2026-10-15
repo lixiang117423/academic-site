@@ -98,7 +98,7 @@ describe('content 文件通过 schema 校验', () => {
 describe('schema 真的会拒绝坏输入（反例）', () => {
   it('publicationItem 拒绝非法 type 枚举值', () => {
     expect(() =>
-      publicationItem.parse({ ...validPublication, type: 'thesis' })
+      publicationItem.parse({ ...validPublication, type: 'dataset' })
     ).toThrow();
   });
 
@@ -120,7 +120,16 @@ describe('schema 真的会拒绝坏输入（反例）', () => {
   });
 
   it('publicationItem 接受 type / authorRole 的全部枚举成员，且拒绝邻接的错拼值', () => {
-    for (const type of ['journal', 'preprint', 'conference'] as const) {
+    for (const type of [
+      'journal',
+      'conference',
+      'preprint',
+      'book',
+      'book-chapter',
+      'thesis',
+      'report',
+      'other',
+    ] as const) {
       expect(() =>
         publicationItem.parse({ ...validPublication, type })
       ).not.toThrow();
@@ -139,7 +148,7 @@ describe('schema 真的会拒绝坏输入（反例）', () => {
       publicationItem.parse({ ...validPublication, authorRole: 'coauthor' })
     ).toThrow();
     expect(() =>
-      publicationItem.parse({ ...validPublication, type: 'book' })
+      publicationItem.parse({ ...validPublication, type: 'bookchapter' })
     ).toThrow();
   });
 

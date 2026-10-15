@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -26,7 +27,29 @@ TYPE_BY_ENTRYTYPE = {
     "conference": "conference",
     "misc": "preprint",
     "unpublished": "preprint",
+    "online": "preprint",
+    "software": "preprint",
+    "incollection": "book-chapter",
+    "inbook": "book-chapter",
+    "book": "book",
+    "booklet": "book",
+    "manual": "book",
+    "proceedings": "book",
+    "phdthesis": "thesis",
+    "mastersthesis": "thesis",
+    "thesis": "thesis",
+    "techreport": "report",
+    "report": "report",
 }
+
+# 未登记的 entry type 一律回退到 other 并在 stderr 告警，绝不静默当成 journal
+# （2026-10-15 复审裁决；zod 的 type 枚举已同步扩到八值，见 src/lib/schemas.ts）。
+FALLBACK_TYPE = "other"
+
+# venue 取值优先级：先期刊名，再书/会议集名，最后丛书名与出版方；都没有则留空串。
+# （@phdthesis 的 school、@techreport 的 institution 未纳入——本机暂无该类真实数据，
+#  留待用户给出真实 .bib 时按实际字段再扩。）
+VENUE_FIELDS = ("journal", "booktitle", "series", "publisher")
 
 REQUIRED_FIELDS = {
     "id", "title", "authors", "year", "venue", "type", "doi",
@@ -55,16 +78,41 @@ def _author_role(annotation: str | None) -> str:
     return "co-author"
 
 
+def _venue(entry: dict[str, str]) -> str:
+    """按 VENUE_FIELDS 的优先级取 venue；一个都没命中则返回空串。"""
+    for field in VENUE_FIELDS:
+        value = entry.get(field)
+        if value:
+            return value
+    return ""
+
+
+def _map_type(entry: dict[str, str]) -> str:
+    """把 BibTeX 的 entry type 映射到 zod schema 的八值枚举。
+
+    未登记的 entry type 回退到 FALLBACK_TYPE，并往 stderr 打一条 [WARN]（点名
+    该 entry type 与条目 ID）；这是告警不是失败，管道照常跑完。
+    """
+    entry_type = entry.get("ENTRYTYPE", "").lower()
+    mapped = TYPE_BY_ENTRYTYPE.get(entry_type)
+    if mapped is None:
+        print(
+            f'[WARN] 未登记的 BibTeX entry type "{entry_type}"'
+            f'（条目 {entry["ID"]}）已回退为 type={FALLBACK_TYPE}',
+            file=sys.stderr,
+        )
+        return FALLBACK_TYPE
+    return mapped
+
+
 def _entry_to_item(entry: dict[str, str]) -> dict[str, object]:
     return {
         "id": entry["ID"],
         "title": " ".join(entry.get("title", "").split()),
         "authors": _split(entry.get("author"), " and "),
         "year": int(entry.get("year", "0") or 0),
-        "venue": entry.get("journal") or entry.get("booktitle") or "",
-        "type": TYPE_BY_ENTRYTYPE.get(
-            entry.get("ENTRYTYPE", "article").lower(), "journal"
-        ),
+        "venue": _venue(entry),
+        "type": _map_type(entry),
         "doi": entry.get("doi") or None,
         "url": entry.get("url") or None,
         "code": entry.get("code") or None,

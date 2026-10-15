@@ -12,7 +12,15 @@ export interface Publication {
   authors: string[];
   year: number;
   venue: string;
-  type: 'journal' | 'preprint' | 'conference';
+  type:
+    | 'journal'
+    | 'conference'
+    | 'preprint'
+    | 'book'
+    | 'book-chapter'
+    | 'thesis'
+    | 'report'
+    | 'other';
   doi: string | null;
   url: string | null;
   code: string | null;

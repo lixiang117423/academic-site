@@ -1694,10 +1694,16 @@ import type { Publication } from '../lib/types';
 
 const all = await listPublications();
 
+// 覆盖 type 枚举的全部取值：任何一类都不能被静默丢弃
 const sections: { key: Publication['type']; heading: string }[] = [
   { key: 'journal', heading: 'Journal articles' },
   { key: 'conference', heading: 'Conference papers' },
   { key: 'preprint', heading: 'Preprints' },
+  { key: 'book', heading: 'Books' },
+  { key: 'book-chapter', heading: 'Book chapters' },
+  { key: 'thesis', heading: 'Theses' },
+  { key: 'report', heading: 'Reports' },
+  { key: 'other', heading: 'Other outputs' },
 ];
 
 const grouped = sections

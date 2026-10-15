@@ -61,7 +61,7 @@
 | `/` · `/zh/` | Home / 首页 | 双语 | 姓名、职位、机构；一句话研究方向；精选论文 3–5 条（由 `publications.bib` 的 `annotation` 标记 `featured`）；最新笔记外链（来自 `site.yaml` 的 `featuredPosts`）；联系方式区块 |
 | `/about` · `/zh/about` | About / 关于 | 双语 | 履历摘要、研究兴趣、完整联系方式与社交链接 |
 | `/research` · `/zh/research` | Research / 研究方向 | 双语 | 按 `order` 排序的研究方向条目，每个方向一段摘要（中英各一版，中文缺失回退英文） |
-| `/publications` | Publications | **仅英文** | 论文题录全部内容，按年份倒序、按类型分区（期刊论文 / 预印本 / 会议）；每条含 DOI / PDF / Code 链接 |
+| `/publications` | Publications | **仅英文** | 论文题录全部内容，按年份倒序、按类型分区（期刊 / 会议 / 预印本 / 专著 / 书章 / 学位论文 / 报告 / 其他）；每条含 DOI / PDF / Code 链接 |
 | `/software` · `/zh/software` | Software / 软件 | 双语 | 每个软件一张紧凑条目：名称、一句话说明、语言、安装命令、仓库链接 |
 | `/cv` · `/zh/cv` | CV / 简历 | 双语 | 网页版简短时间线（教育、职位、代表性成果）；下载中英两份 PDF |
 | `/404` | — | — | 静态 404 页 |
@@ -129,7 +129,7 @@
       "authors": ["string"],
       "year": 2026,
       "venue": "string",
-      "type": "journal | preprint | conference",
+      "type": "journal | conference | preprint | book | book-chapter | thesis | report | other",
       "doi": "string | null",
       "url": "string | null",
       "code": "string | null",

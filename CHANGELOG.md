@@ -2,6 +2,19 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-15 16:33 — Task 3 复审修复：扩展论文类型枚举 + 未登记 entry type 显式告警
+
+- **Finding（Important，计划/规格层缺陷）**：`TYPE_BY_ENTRYTYPE` 只覆盖 5 个 entry type 且 fallback 为 `journal`，Zotero 常见的 `@incollection` / `@inbook` / `@book` / `@phdthesis` / `@mastersthesis` / `@techreport` 会被静默标成 `journal`（zod 枚举也接受，构建不报错）→ 真实数据一导入就会显示错误元数据。按控制器 2026-10-15 裁决修复。
+- **改动 1（类型模型扩到八值）**：`src/lib/schemas.ts` 的 `publicationItem.type` 与 `src/lib/types.ts` 的 `Publication['type']` 同步改为 `journal | conference | preprint | book | book-chapter | thesis | report | other`（顺序与修订后的 spec §5.3、Task 6 分区一致，两处 lockstep）。
+- **改动 2（脚本映射 + 绝不静默失败）**：`scripts/sync_publications.py` 的 `TYPE_BY_ENTRYTYPE` 扩到 19 个 entry type（article；inproceedings/conference；misc/unpublished/online/software；incollection/inbook；book/booklet/manual/proceedings；phdthesis/mastersthesis/thesis；techreport/report），fallback 由 `journal` 改为 `other`，并新增 `FALLBACK_TYPE = "other"` 常量与 `_map_type()`：未登记类型回退 `other` 时往 **stderr** 打一条 `[WARN]`，点名 entry type 与条目 ID，**不是失败**（管道照常跑完）。
+- **改动 3（venue 取值链）**：原先只读 `journal`/`booktitle`，现抽成 `_venue()` 按 `VENUE_FIELDS = (journal, booktitle, series, publisher)` 优先级取值，都没有则空串。**明确回答复审要求**：venue 现在依次查 `journal` → `booktitle` → `series` → `publisher`；`@phdthesis` 的 `school`、`@techreport` 的 `institution` **未纳入**（裁决只授权扩到 series/publisher，且本机暂无该类真实数据）；有真实 `.bib` 时若出现空 venue 再据实扩充。
+- **改动 4（测试）**：`tests/test_sync_publications.py` 新增 2 例（共 4 例）——① `@incollection` → `book-chapter` 且 venue 取自 `booktitle`；② `@dataset`（未登记）→ `other`、管道仍产出条目、用 `capsys` 断言 **stderr** 含 `[WARN]` + 类型名 + 条目 ID 且 stdout 为空。TDD：新增测试先跑得 **RED**（`2 failed, 2 passed`，报 `AssertionError: assert 'journal' == 'other'`——正是本 finding 描述的静默误分类），改脚本后 **GREEN**（4 passed）。
+- **改动 5（TS 反例的必然连带）**：`tests/content-schema.test.ts` 有 3 处断言**真的被这次枚举扩容打破**，只改这 3 处、未削弱任何反例——① 「拒绝非法 type」原用 `'thesis'`（现在合法）→ 换成本次管线会回退到 `other` 的 `'dataset'`；② 「接受全部枚举成员」的循环由 3 值补成完整 8 值；③ 「拒绝邻接错拼值」原用 `'book'`（现在合法）→ 换成错拼 `'bookchapter'`。两条 `toThrow` 反例仍然拒绝非法值（vitest 通过即证据）。
+- **验收（提交前实跑）**：`python3 -m pytest tests/test_sync_publications.py -v` → **4 passed**；`pnpm test` → **15/15 PASS**（vitest 3.2.7）；`pnpm exec tsc --noEmit --incremental false` → 退出码 0；`pnpm build` → 成功，1 page built。另用一个**纯内存探针**（不落任何文件）跑全部新类型，实测映射：article→journal(venue=J)、incollection→book-chapter(venue=Handbook)、book→book(venue=PubCo)、phdthesis→thesis、techreport→report、online→preprint、dataset→other 且 stderr 出现 `[WARN] ... "dataset" ... 条目 d1`。
+- **产物重生成**：按裁决重跑 `/Users/lixiang/miniforge3/envs/python/bin/python3 scripts/sync_publications.py`，`content/publications.json` 的 `generated_at` 刷新为 `2026-10-15T16:32:51+08:00`，`count: 0`、`items: []`（`.bib` 仍为占位；回读自检打印 `[INFO] 回读自检通过：字段齐全、count 一致（0）`）。
+- 明确**未做**（裁决列为 out of scope）：未改 0 条 `publications.json` 的构建告警 `[WARN] [file-loader] No items found`、未改 `int(year)` 的 ValueError 行为。
+- 提交：`fix(data): 扩展论文类型枚举并让未登记 entry type 显式告警`（同一提交带上控制器留在工作区的 spec/plan 修订，见提交说明）。
+
 ## 2026-10-15 16:19 — Task 3 论文数据管道（BibTeX → JSON）完成
 
 - 按 `task-3-brief.md` 建 Python 数据管道：`content/publications.bib`（唯一权威源，**当前仅 2 行注释、0 条目**，真实论文待用户从 Zotero 导出后覆盖）→ `content/publications.json`（`{ generated_at, source, count, items }`，条目字段与 `src/lib/schemas.ts` 的 `publicationItem` 逐字段一致：13 个字段，`type` ∈ journal/preprint/conference、`authorRole` ∈ first/co-first/corresponding/co-author 与 zod 枚举对齐）。
