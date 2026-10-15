@@ -2,6 +2,17 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-15 16:55 — Task 4 复审修复（image 字段 + pick 空白回退用例）
+
+- **Finding（Important，计划层缺陷）**：`listResearch()` 原先只映射 `{ slug, title, summary, order, keywords }`，漏掉 `ResearchItem.image?: string`（定义在 `src/lib/types.ts`、research schema 接受、spec §「research 条目」也登记了该字段）——因页面只允许调用冻结的五个访问器，任何研究配图都取不到。brief Step 9 的代码片段本身即漏字段，属计划缺陷。按控制端 2026-10-15 裁决修复。
+- **改动 1**：`src/lib/data-source.ts` 的 `listResearch()` 映射补一行 `image: entry.data.image`，返回完整 `ResearchItem`（其余字段与签名不变）。
+- **改动 2（Minor）**：`tests/i18n.test.ts` 补 1 个用例——`pick('zh', { en: 'Hello', zh: '   ' })` 应回退 `'Hello'`；brief 明确要求「中文为空串或纯空白都回退英文」，实现（`value.zh.trim() !== ''`）本就正确，缺的是用例。用例数 4 → 5。
+- **验收（提交前实跑）**：`pnpm test` → **25/25 PASS**（vitest 3.2.7；i18n 5 + data-select 5 + content-schema 15）；`pnpm exec tsc --noEmit --incremental false` → 退出码 0、无输出（`image` 为可选属性，`entry.data.image` 赋给 `image?: string` 在 strict 下通过）；`pnpm build`（astro 5.18.2）→ **Complete!**、1 page built。
+- **运行期复核（真实 content layer 探针）**：更新 `.superpowers/.../tmp-probe/probe.astro`（忽略目录，非交付物）打印 `hasImageKey` 与 `image`，重建探针后实测 `listResearch()` 返回对象含 `image` 键：`{"slug":"effector-genomics",...,"hasImageKey":true,"image":null}`——`image` 是 `entry.data.image` 的直通映射，当前样例文件未配图故为 `null`。
+- **未做（明确 out of scope）**：未动 `data-source.ts` 的结构性断言、`data-select.test.ts` 的 `as never`、未补 `year` 筛选用例、未处理空集合构建告警。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改；未删除任何文件。
+- 提交：`fix(data): listResearch 返回 image 字段并补 pick 空白回退用例`。
+
 ## 2026-10-15 16:48 — Task 4 适配层与语言回退
 
 - 按 `task-4-brief.md` 实现展示层的数据入口与双语回退：`src/lib/i18n.ts`（`pick()` / `localeFromPath()` / `altPath()` / `LOCALES` / `DEFAULT_LOCALE`，中文缺失或空串回退英文）、`src/lib/data-select.ts`（纯函数 `filterPublications()` / `sortResearch()` / `sortSoftware()`，不 import `astro:content`，因此可单测）、`src/lib/data-source.ts`（唯一 `astro:content` 数据入口，导出冻结的五个访问器 `getSiteProfile` / `listPublications` / `listResearch` / `listSoftware` / `getCV`）。

@@ -14,6 +14,10 @@ describe('pick', () => {
     expect(pick('zh', { en: 'Hello', zh: '' })).toBe('Hello');
   });
 
+  it('中文为纯空白时回退英文', () => {
+    expect(pick('zh', { en: 'Hello', zh: '   ' })).toBe('Hello');
+  });
+
   it('英文请求始终返回英文', () => {
     expect(pick('en', { en: 'Hello', zh: '你好' })).toBe('Hello');
   });

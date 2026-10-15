@@ -34,6 +34,7 @@ export async function listResearch(): Promise<ResearchItem[]> {
     summary: entry.data.summary,
     order: entry.data.order,
     keywords: entry.data.keywords,
+    image: entry.data.image,
   }));
   return sortResearch(items);
 }
