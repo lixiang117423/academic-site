@@ -2,6 +2,19 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-15 16:38 — 学术主页实现：Task 1–3 完成（阶段性检查点）
+
+以 `subagent-driven-development` 执行实现计划（分支 `feat/academic-site`，基于 `main` @ 1156944）：每任务由独立 implementer 实现、独立 reviewer 审、必要时修复轮，控制端不代写代码。累计 6 个提交，最新 `055a48b`。
+
+- **Task 1 脚手架与构建基线**（`24a0403`）：Astro 5.18.2 + TypeScript strict + vitest；`pnpm build` 产出 `dist/index.html`。新增 `pnpm-workspace.yaml`（pnpm 11 构建白名单 `allowBuilds: esbuild/sharp`）——不加则 `pnpm install` 以 `ERR_PNPM_IGNORED_BUILDS` 失败，连带 `pnpm build` 起不来。
+- **Task 2 内容模型与 schema 校验**（`f44eb7c` + 修复 `89c2a27`）：新增 `src/lib/types.ts`、`src/lib/schemas.ts`（7 个 zod schema，不依赖 `astro:content`，因此可单测）、`src/content.config.ts`（收敛为 loader/接线）；`content/` 下 site.yaml、cv.yaml、research/、software/ 样例。修复轮解决 2 条重要问题：补 `@types/node`（此前 `tsc` 报 TS2307×2）、把只做 `toContain` 字符串检查的测试改为对真实内容执行 schema 解析并加 10 条负例。
+- **Task 3 论文数据管道**（`07e7867` + 修复 `3f04135`）：`scripts/sync_publications.py`（适配已装的 `bibtexparser` 2.1.0 API，输出 13 字段与 schema 逐字段对齐，写盘后回读自检）、`tests/test_sync_publications.py`、`pyproject.toml`。修复轮解决 1 条重要问题：`type` 枚举由三值扩为八值（`journal|conference|preprint|book|book-chapter|thesis|report|other`），未登记的 ENTRYTYPE 回退 `other` 并向 stderr 打 `[WARN]`（此前会静默写成 `journal` 且 venue 为空）。
+- **验收证据（控制端 2026-10-15 16:27 复跑）**：`pnpm test` 15/15 PASS；`pnpm build` Complete!；pytest 4 passed（实现者报告 + 控制端复跑交叉确认）。
+- **设计与计划修订**：spec §5.4 research 模型简化为单文件（原中英双文件方案会让同一份元数据两处漂移）；spec §4.1/§5.3 与计划 Task 2 两处代码片段同步为八值 `type` 枚举，消除计划内部矛盾。
+- **未决小事（已记入 ledger）**：计划 Task 1/2 的 Files 清单需补 `@types/node` 与 `pnpm-workspace.yaml`；`types.ts`/`schemas.ts` 的八值枚举已在两处 lockstep，但 `CHANGELOG`/`项目文件记录` 里「19 个 entry type」应为 18；`VENUE_FIELDS` 未含 `school`/`institution`（学位论文、报告的 venue 可能为空）；非数字 `year` 抛原始 `ValueError`；`content-schema.test.ts` 把占位串 `TODO: 待用户提供` 写成字面断言，用户填真实资料后会误报。
+- **状态**：Task 4–12 未开工。恢复入口 `/Users/lixiang/NutstoreFiles/03.编程相关/my_academic_web/.superpowers/sdd/2026-10-15-academic-site-implementation/progress.md`（首行标注 plan 路径；`Task <N>: complete` 行即已完成集合；含全部 Ruling）。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改。
+
 ## 2026-10-15 16:33 — Task 3 复审修复：扩展论文类型枚举 + 未登记 entry type 显式告警
 
 - **Finding（Important，计划/规格层缺陷）**：`TYPE_BY_ENTRYTYPE` 只覆盖 5 个 entry type 且 fallback 为 `journal`，Zotero 常见的 `@incollection` / `@inbook` / `@book` / `@phdthesis` / `@mastersthesis` / `@techreport` 会被静默标成 `journal`（zod 枚举也接受，构建不报错）→ 真实数据一导入就会显示错误元数据。按控制器 2026-10-15 裁决修复。
