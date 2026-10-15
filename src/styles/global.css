@@ -1,0 +1,121 @@
+/*
+ * 全局基础样式：由 src/layouts/BaseLayout.astro 引入（全站唯一 CSS 入口）。
+ * 元素级排版节奏与配色均照可视稿 docs/design-mockups/01_页面设计_初稿.html；
+ * 论文列表 / 软件列表 / 履历 / 研究方向等页面级样式由 Task 6–9 各自的页面负责。
+ */
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-size: var(--step0);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 标题样式来自可视稿：结构靠字号与间距建立，不用卡片、圆角、阴影 */
+h1 {
+  font-size: var(--step3);
+  line-height: 1.2;
+  margin: 2.75rem 0 0.35rem;
+  font-weight: 600;
+}
+
+h2 {
+  font-size: var(--step2);
+  margin: 2.75rem 0 0.6rem;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: var(--step1);
+  margin: 1.75rem 0 0.25rem;
+  font-weight: 600;
+}
+
+p {
+  margin: 0 0 0.85rem;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 0.18em;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* 图片类素材不得撑破 375px 视口（Task 8/9 接入配图时的兜底） */
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 单栏定宽容器：正文行宽 40rem 减去左右各 1.25rem 留白 */
+.wrap {
+  max-width: var(--measure);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+/* 元数据与辅助文字：无衬线、小一号、弱化色 */
+.meta {
+  font-family: var(--font-sans);
+  font-size: var(--step-1);
+  color: var(--text-muted);
+  margin: 0 0 0.15rem;
+}
+
+/* 导语（姓名下方的那句话） */
+.lead {
+  font-family: var(--font-sans);
+  font-size: var(--step0);
+  color: var(--text-muted);
+  margin: 0 0 1.25rem;
+}
+
+code,
+pre {
+  font-family: var(--font-mono);
+  font-size: var(--step-1);
+}
+
+pre {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.7rem 0.85rem;
+  margin: 0.6rem 0 0.5rem;
+  overflow-x: auto;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2.5rem 0;
+}
+
+/* 动效克制：只保留回应式交互，不做入场动画 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

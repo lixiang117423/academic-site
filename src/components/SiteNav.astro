@@ -1,0 +1,89 @@
+---
+import { getSiteProfile } from '../lib/data-source';
+import { pick } from '../lib/i18n';
+import type { Locale } from '../lib/types';
+import LangSwitch from './LangSwitch.astro';
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+}
+
+const { locale, currentPath } = Astro.props;
+const site = await getSiteProfile();
+
+const prefix = locale === 'zh' ? '/zh' : '';
+
+// Publications 只有英文版（spec §4.1），故该条不带语言前缀
+const items = [
+  { href: `${prefix}/about`, label: { en: 'About', zh: '关于' } },
+  { href: `${prefix}/research`, label: { en: 'Research', zh: '研究方向' } },
+  { href: '/publications', label: { en: 'Publications', zh: 'Publications' } },
+  { href: `${prefix}/software`, label: { en: 'Software', zh: '软件' } },
+  { href: `${prefix}/cv`, label: { en: 'CV', zh: '简历' } },
+];
+
+// 命中自身与子路径都算当前页；`trailingSlash: 'ignore'` 下 `/cv` 与 `/cv/` 都要认
+const isCurrent = (href: string) =>
+  currentPath === href || currentPath.startsWith(`${href}/`);
+---
+
+<nav class="site-nav wrap" aria-label="Primary">
+  <ul>
+    {
+      items.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            aria-current={isCurrent(item.href) ? 'page' : undefined}
+          >
+            {pick(locale, item.label)}
+          </a>
+        </li>
+      ))
+    }
+    <li>
+      <a href={site.blog.url} rel="me noopener">{pick(locale, site.blog.label)}</a>
+    </li>
+  </ul>
+  <LangSwitch locale={locale} currentPath={currentPath} />
+</nav>
+
+<style>
+  /* 可视稿 nav.site：顶部留白 2.5rem 取自可视稿 .screen 的上内边距（正式站点无 .screen 包裹层） */
+  .site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding-block: 2.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-sans);
+    font-size: var(--step-1);
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.15rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
+  a[aria-current='page'] {
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+  }
+</style>

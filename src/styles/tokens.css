@@ -1,0 +1,43 @@
+/*
+ * 设计令牌（唯一来源）。
+ * 取值 = 用户 2026-10-15 定稿的可视稿 docs/design-mockups/01_页面设计_初稿.html，
+ * 可视稿与本文件的唯一差异是令牌名：可视稿写 --muted，本文件按实现计划的接口约定写
+ * --text-muted（值相同），并保留一行别名以便后续照抄可视稿片段时仍能取到颜色。
+ * 字体一律用系统字体栈，不引入任何外部字体或 CDN（离线与大陆网络均可正常显示）。
+ */
+:root {
+  --bg: #fdfdfc;
+  --surface: #f6f6f4;
+  --text: #24292f;
+  --text-muted: #6b7280;
+  --accent: #1e4e8c;
+  --border: #e3e3e0;
+
+  --font-serif: Georgia, "Times New Roman", "Songti SC", "Noto Serif SC", serif;
+  --font-sans: -apple-system, "Helvetica Neue", "PingFang SC", "Noto Sans SC",
+    sans-serif;
+  --font-mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+
+  --measure: 40rem;
+  --step-1: 0.8125rem;
+  --step0: 1rem;
+  --step1: 1.1875rem;
+  --step2: 1.4375rem;
+  --step3: 1.9375rem;
+  --gap: 1.5rem;
+  --gap-lg: 3rem;
+
+  --muted: var(--text-muted);
+}
+
+/* 深色模式只覆盖同一组变量，不引入第二套选择器体系 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16181d;
+    --surface: #1e2027;
+    --text: #e6e6e4;
+    --text-muted: #9aa0a6;
+    --accent: #8ab4f8;
+    --border: #2c2f36;
+  }
+}

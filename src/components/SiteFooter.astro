@@ -1,0 +1,50 @@
+---
+import { getSiteProfile } from '../lib/data-source';
+import { pick } from '../lib/i18n';
+import type { Locale } from '../lib/types';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const site = await getSiteProfile();
+
+// 构建时刻的年份；可视稿 footer 的「© 年 姓名」同此写法
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer wrap">
+  <p class="meta">
+    <a href={`mailto:${site.email}`}>{site.email}</a>
+    {
+      site.links.map((link) => (
+        <>
+          {' · '}
+          <a href={link.url} rel="me noopener">
+            {link.label}
+          </a>
+        </>
+      ))
+    }
+    {' · '}
+    <a href={site.blog.url} rel="noopener">{pick(locale, site.blog.label)}</a>
+  </p>
+  <p class="meta">© {year} {pick(locale, site.name)}</p>
+</footer>
+
+<style>
+  /*
+   * 可视稿 footer.site：用上边框充当分隔线（不再另插 <hr>），无衬线小字号；
+   * 下内边距 4rem 承接可视稿 .screen 的底部留白。链接色沿用全局 a 的强调色
+   * （可视稿 footer 只把正文设成弱化色，链接仍是 accent，故此处不覆盖 a 的颜色）。
+   */
+  .site-footer {
+    margin-top: var(--gap-lg);
+    padding-block: 2rem 4rem;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-sans);
+    font-size: var(--step-1);
+    color: var(--text-muted);
+  }
+</style>

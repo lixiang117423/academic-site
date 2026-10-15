@@ -2,6 +2,18 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-15 17:03 — Task 5 设计令牌与基础布局
+
+- 按 `task-5-brief.md` 建基础层：`src/styles/tokens.css`（设计令牌，明暗两套变量）、`src/styles/global.css`（全局基础样式，全站唯一 CSS 入口，`@import` tokens）、`src/layouts/BaseLayout.astro`（HTML 骨架 + meta + 导航 + 页脚，接收 `locale / title / description`）、`src/components/SiteNav.astro`、`src/components/LangSwitch.astro`、`src/components/SiteFooter.astro`；`src/pages/index.astro` 由占位页改为使用 `BaseLayout` 的最小页（Task 6 会写正式首页内容）。
+- **取值来源：可视稿优先**（spec §9.4 / `docs/design-mockups/01_页面设计_初稿.html`）。与 brief 片段不一致处一律取可视稿：`--measure: 40rem`（brief 为 72ch）、步骤字号 `0.8125 / 1 / 1.1875 / 1.4375 / 1.9375rem`、`line-height: 1.7`、正文衬线栈 `Georgia, "Times New Roman", "Songti SC", "Noto Serif SC"`、无衬线栈含 `"Helvetica Neue"`、`hr` 外边距 2.5rem、`pre` 无圆角、`text-underline-offset: 0.18em`。令牌名沿用计划接口约定 `--text-muted`（可视稿写 `--muted`，值相同），另保留 `--muted: var(--text-muted)` 别名，避免后续照抄可视稿片段时取不到颜色。
+- **组件样式同样取自可视稿**：导航 `gap: 1rem` / `ul` 间距 1.15rem / `aria-current` 用强调色 + 2px 下边框；页脚用上边框充当分隔线（不再另插 `<hr>`，故 brief 片段里的 `footer a { color: var(--text-muted) }` 未采用——可视稿里页脚正文是弱化色、链接仍是 accent），无衬线 0.8125rem。
+- **无障碍与兜底**：`a:focus-visible` / `button:focus-visible` 保留 2px 强调色外描边；`prefers-reduced-motion: reduce` 关闭动效；`img, svg { max-width: 100% }`。
+- **验收（提交前实跑）**：`pnpm build`（astro 5.18.2）→ **Complete!**、1 page built；`pnpm test` → **25/25 PASS**（vitest 3.2.7，3 个文件）；`pnpm exec tsc --noEmit --incremental false` → 退出码 0、无输出；`grep -rn "fonts.googleapis\|cdn.jsdelivr\|cdnjs\|unpkg" src/ public/` → **NO_CDN**。
+- **浏览器实测（headless Chrome + 临时探针，非目视）**：375px 视口下 `documentElement.scrollWidth = clientWidth = 375`（无横向滚动）；浅色模式实测 `body` 背景 `rgb(253,253,252)`、导航字号 13px、导航项 `rgb(36,41,47)`、语言切换 `rgb(107,114,128)`、页脚文字 `rgb(107,114,128)` 而页脚链接仍为强调色 `rgb(30,78,140)`；`--force-dark-mode` 下背景转为 `rgb(22,24,29)`、链接转 `rgb(138,180,248)`，深色变量生效。探针 `tmp-probe/task5-measure.html` 属忽略目录、非交付物（保留备查，未删除）。
+- **构建产物外部引用核查**：`dist/index.html` 全站仅两处外链，均为普通 `<a href>`/canonical——`https://lixiang117423.github.io`（用户自己的博客）与 canonical 占位 `https://example.invalid/`（来自 `astro.config.mjs` 的待定 `site`）；`<script>` 标签 0 个、远程字体/样式/图片 0 个。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改；未删除任何文件。
+- 提交：`feat(ui): 设计令牌与基础布局`。
+
 ## 2026-10-15 16:55 — Task 4 复审修复（image 字段 + pick 空白回退用例）
 
 - **Finding（Important，计划层缺陷）**：`listResearch()` 原先只映射 `{ slug, title, summary, order, keywords }`，漏掉 `ResearchItem.image?: string`（定义在 `src/lib/types.ts`、research schema 接受、spec §「research 条目」也登记了该字段）——因页面只允许调用冻结的五个访问器，任何研究配图都取不到。brief Step 9 的代码片段本身即漏字段，属计划缺陷。按控制端 2026-10-15 裁决修复。

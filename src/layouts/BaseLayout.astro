@@ -1,0 +1,39 @@
+---
+import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { getSiteProfile } from '../lib/data-source';
+import { pick } from '../lib/i18n';
+import type { Locale } from '../lib/types';
+import '../styles/global.css';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description?: string;
+}
+
+const { locale, title, description } = Astro.props;
+const site = await getSiteProfile();
+const currentPath = Astro.url.pathname;
+
+// astro.config.mjs 的 site 目前是待定占位；此处只按其取值生成 canonical，不写死域名
+const canonical = Astro.site ? new URL(currentPath, Astro.site).href : undefined;
+---
+
+<!doctype html>
+<html lang={locale === 'zh' ? 'zh-CN' : 'en'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · {pick(locale, site.name)}</title>
+    {description && <meta name="description" content={description} />}
+    {canonical && <link rel="canonical" href={canonical} />}
+  </head>
+  <body>
+    <SiteNav locale={locale} currentPath={currentPath} />
+    <main class="wrap">
+      <slot />
+    </main>
+    <SiteFooter locale={locale} />
+  </body>
+</html>

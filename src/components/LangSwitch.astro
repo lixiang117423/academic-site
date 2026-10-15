@@ -1,0 +1,33 @@
+---
+import { altPath } from '../lib/i18n';
+import type { Locale } from '../lib/types';
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+}
+
+const { locale, currentPath } = Astro.props;
+const target = altPath(currentPath);
+const targetLocale = locale === 'zh' ? 'en' : 'zh-CN';
+---
+
+<a class="lang-switch" href={target} hreflang={targetLocale} lang={targetLocale}>
+  {locale === 'zh' ? 'EN' : '中文'}
+</a>
+
+<style>
+  /* 可视稿 nav.site 的 .lang 项：无衬线、弱化色、不换行 */
+  .lang-switch {
+    font-family: var(--font-sans);
+    font-size: var(--step-1);
+    color: var(--text-muted);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .lang-switch:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+</style>
