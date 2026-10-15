@@ -2,6 +2,17 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-15 16:48 — Task 4 适配层与语言回退
+
+- 按 `task-4-brief.md` 实现展示层的数据入口与双语回退：`src/lib/i18n.ts`（`pick()` / `localeFromPath()` / `altPath()` / `LOCALES` / `DEFAULT_LOCALE`，中文缺失或空串回退英文）、`src/lib/data-select.ts`（纯函数 `filterPublications()` / `sortResearch()` / `sortSoftware()`，不 import `astro:content`，因此可单测）、`src/lib/data-source.ts`（唯一 `astro:content` 数据入口，导出冻结的五个访问器 `getSiteProfile` / `listPublications` / `listResearch` / `listSoftware` / `getCV`）。
+- **TDD 证据（RED → GREEN，两轮）**：① `tests/i18n.test.ts`（brief 逐字 4 例）先跑 `pnpm test` → `Error: Cannot find module '../src/lib/i18n'`（`Test Files 1 failed | 1 passed`，Collection 期失败，符合预期：模块尚未创建）；写 `src/lib/i18n.ts` 后 → `tests/i18n.test.ts (4 tests)` 通过。② `tests/data-select.test.ts`（brief Step 5 逐字 5 例）先跑 → `Cannot find module '../src/lib/data-select'`（`1 failed | 2 passed`）；写 `src/lib/data-select.ts` 后 → 5 例通过。最终 `pnpm test` **24/24 PASS**（vitest 3.2.7，3 个文件）。
+- **验收门**：`pnpm test` 24/24 PASS；`pnpm exec tsc --noEmit --incremental false` 退出码 0、无输出；`pnpm build`（astro 5.18.2）成功、1 page built；`grep -rn "content/" src/pages src/components` → `NO_DIRECT_ACCESS`；`astro:content` 的 import 只出现在 `src/lib/data-source.ts`（取数）与 `src/content.config.ts`（集合定义），符合「单一取数入口」。
+- **运行期探针（真实 content layer，实测非推断）**：因 `data-source.ts` 依赖 `astro:content`、vitest 无法加载，另用一个临时 Astro 配置注入 `/__probe` 路由（探针与产物都在 `.superpowers/sdd/2026-10-15-academic-site-implementation/tmp-probe/`，被 `.superpowers/sdd/.gitignore` 忽略，不进仓库），`astro build` 后读到实测值：`getSiteProfile()` 返回 site.yaml（占位串/`blog.label` 双语/`links: []`）、`listPublications()` → `0` 条、`listResearch()` → slug `effector-genomics`（order 1、双语标题、keywords 齐全）、`listSoftware()` → slug `biortools`（name `bioRtools`、language `R`）、`getCV()` → 四个分组齐全。可证 `glob`/`file` loader 的 entry id 与 `data-source.ts` 的取值方式一致。
+- **已知现象（非本任务缺陷）**：`content/publications.json` 当前 `count: 0`，Astro `file` loader 不注册集合，构建时会打印 `[WARN] [file-loader] No items found in ./content/publications.json` 与两行 `The collection "publicationsGenerated" does not exist or is empty.`；`getCollection()` 此时返回 `[]`（不抛错），故 `listPublications()` 如实返回空数组，用户从 Zotero 导入真实 `.bib` 并重跑管道后该告警消失。
+- **偏离 brief 一处（Files 清单自相矛盾，按正文执行）**：brief 顶部 Files 列了 `tests/data-source.test.ts`，但其 Step 5 正文明确要求写 `tests/data-select.test.ts`（并解释 `data-source.ts` 直接 `import 'astro:content'`、vitest 无法解析）。据此新建的是 `tests/data-select.test.ts`，未创建 `tests/data-source.test.ts`（该文件在 brief 正文里没有任何用例内容），`data-source.ts` 的运行期正确性改由上述真实 content layer 探针证明。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改；未删除任何文件。
+- 提交：`feat(data): 适配层 data-source 与语言回退`。
+
 ## 2026-10-15 16:41 — 页面设计初稿（可视稿，供用户定方向）
 
 - 按 `frontend-design` 产出单文件可视稿 `docs/design-mockups/01_页面设计_初稿.html`（自包含、无外部 CDN、含明暗两套 CSS 变量），同一页内并置 6 个画面：首页方案 A（名字开场 + 精选论文，最安静）、首页方案 B（编号索引式研究方向，个性更强）、Publications、Research、Software、CV。
