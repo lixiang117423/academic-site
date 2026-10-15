@@ -2,6 +2,15 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-15 16:41 — 页面设计初稿（可视稿，供用户定方向）
+
+- 按 `frontend-design` 产出单文件可视稿 `docs/design-mockups/01_页面设计_初稿.html`（自包含、无外部 CDN、含明暗两套 CSS 变量），同一页内并置 6 个画面：首页方案 A（名字开场 + 精选论文，最安静）、首页方案 B（编号索引式研究方向，个性更强）、Publications、Research、Software、CV。
+- 设计取向（相对 spec §9 的落地）：一栏定宽约 40rem、结构靠字号/字重/间距而非卡片圆角阴影、单一深蓝强调色 `#1e4e8c`、正文衬线 + 导航与元数据无衬线、论文列表年份挂在左侧等宽栏、无渐变无毛玻璃无卡片堆 —— 刻意避开 AI 生成页面最集中的「米色底 + 赭石强调 + 同款圆角卡片」组合。
+- 稿内论文/机构等均为**明确标注的占位内容**，未编造任何真实论文、DOI、作者或机构名（遵循全局「事实核验规范」）。
+- 本稿仅用于定视觉方向，**不影响 Task 4–12 的计划**：正式实现仍按 spec §9 的令牌与计划 Task 5 落地，方向一经确认即把方案写回 spec §9。
+- 本地预览：`/Users/lixiang/miniforge3/envs/python/bin/python3 -m http.server 8765 --directory docs/design-mockups`，浏览 `http://localhost:8765/`。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改。
+
 ## 2026-10-15 16:38 — 学术主页实现：Task 1–3 完成（阶段性检查点）
 
 以 `subagent-driven-development` 执行实现计划（分支 `feat/academic-site`，基于 `main` @ 1156944）：每任务由独立 implementer 实现、独立 reviewer 审、必要时修复轮，控制端不代写代码。累计 6 个提交，最新 `055a48b`。

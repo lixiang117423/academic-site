@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>学术主页 · 页面设计初稿</title>
+    <style>
+      :root {
+        --bg: #fdfdfc;
+        --surface: #f6f6f4;
+        --text: #24292f;
+        --muted: #6b7280;
+        --accent: #1e4e8c;
+        --border: #e3e3e0;
+        --serif: Georgia, "Times New Roman", "Songti SC", "Noto Serif SC", serif;
+        --sans: -apple-system, "Helvetica Neue", "PingFang SC", "Noto Sans SC",
+          sans-serif;
+        --mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        --measure: 40rem;
+        --step-1: 0.8125rem;
+        --step0: 1rem;
+        --step1: 1.1875rem;
+        --step2: 1.4375rem;
+        --step3: 1.9375rem;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #16181d;
+          --surface: #1e2027;
+          --text: #e6e6e4;
+          --muted: #9aa0a6;
+          --accent: #8ab4f8;
+          --border: #2c2f36;
+        }
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--serif);
+        font-size: var(--step0);
+        line-height: 1.7;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: var(--accent);
+        text-underline-offset: 0.18em;
+      }
+
+      /* 顶部说明条：仅设计稿有，正式站点不带 */
+      .review-bar {
+        font-family: var(--sans);
+        font-size: var(--step-1);
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 0.7rem 1.25rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem 1rem;
+        align-items: baseline;
+      }
+      .review-bar strong {
+        font-weight: 600;
+      }
+      .review-bar span {
+        color: var(--muted);
+      }
+
+      .screen {
+        max-width: var(--measure);
+        margin-inline: auto;
+        padding: 2.5rem 1.25rem 4rem;
+        border-bottom: 1px dashed var(--border);
+      }
+      .screen:last-of-type {
+        border-bottom: 0;
+      }
+
+      .screen-label {
+        font-family: var(--sans);
+        font-size: var(--step-1);
+        color: var(--muted);
+        margin: 0 0 1.75rem;
+        display: flex;
+        gap: 0.6rem;
+        align-items: baseline;
+        flex-wrap: wrap;
+      }
+      .screen-label b {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      /* 站内导航 */
+      nav.site {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+        font-family: var(--sans);
+        font-size: var(--step-1);
+      }
+      nav.site ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.15rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      nav.site a {
+        color: var(--text);
+        text-decoration: none;
+      }
+      nav.site a:hover {
+        color: var(--accent);
+        text-decoration: underline;
+      }
+      nav.site a[aria-current] {
+        color: var(--accent);
+        border-bottom: 2px solid var(--accent);
+      }
+      .lang {
+        color: var(--muted);
+      }
+
+      h1 {
+        font-size: var(--step3);
+        line-height: 1.2;
+        margin: 2.75rem 0 0.35rem;
+        font-weight: 600;
+      }
+      h2 {
+        font-size: var(--step2);
+        margin: 2.75rem 0 0.6rem;
+        font-weight: 600;
+      }
+      h3 {
+        font-size: var(--step1);
+        margin: 1.75rem 0 0.25rem;
+        font-weight: 600;
+      }
+      p {
+        margin: 0 0 0.85rem;
+      }
+
+      .meta {
+        font-family: var(--sans);
+        font-size: var(--step-1);
+        color: var(--muted);
+        margin: 0 0 0.15rem;
+      }
+      .lead {
+        font-family: var(--sans);
+        font-size: var(--step0);
+        color: var(--muted);
+        margin: 0 0 1.25rem;
+      }
+      .rule {
+        border: 0;
+        border-top: 1px solid var(--border);
+        margin: 2.5rem 0;
+      }
+
+      /* 论文列表：年份挂在左侧栏，条目紧凑 */
+      .pubs {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .pubs > li {
+        display: grid;
+        grid-template-columns: 3.25rem 1fr;
+        gap: 0 1rem;
+        padding: 0.9rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .pubs > li:last-child {
+        border-bottom: 0;
+      }
+      .year {
+        font-family: var(--mono);
+        font-size: var(--step-1);
+        color: var(--muted);
+        padding-top: 0.2rem;
+      }
+      .pub-title {
+        margin: 0;
+        font-weight: 600;
+        line-height: 1.45;
+      }
+      .pub-authors {
+        margin: 0.1rem 0 0;
+        font-family: var(--sans);
+        font-size: var(--step-1);
+        color: var(--text);
+      }
+      .pub-authors .me {
+        font-weight: 600;
+      }
+      .pub-venue {
+        margin: 0.1rem 0 0;
+        font-family: var(--sans);
+        font-size: var(--step-1);
+        color: var(--muted);
+      }
+      .pub-venue .links {
+        white-space: nowrap;
+      }
+      .role {
+        font-family: var(--sans);
+        font-size: 0.75rem;
+        color: var(--accent);
+        border: 1px solid var(--border);
+        padding: 0.02rem 0.35rem;
+        margin-left: 0.4rem;
+        white-space: nowrap;
+      }
+
+      /* 方案 B：编号索引式 */
+      .index-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        counter-reset: idx;
+      }
+      .index-list > li {
+        counter-increment: idx;
+        padding: 0.75rem 0 0.75rem 0;
+        border-top: 1px solid var(--border);
+      }
+      .index-list > li::marker {
+        content: none;
+      }
+      .index-list .num {
+        font-family: var(--mono);
+        font-size: var(--step-1);
+        color: var(--muted);
+        margin-right: 0.75rem;
+      }
+
+      /* 研究方向 */
+      .topic h3 {
+        margin-top: 1.5rem;
+      }
+      .topic .tags {
+        font-family: var(--sans);
+        font-size: var(--step-1);
+        color: var(--muted);
+      }
+
+      /* 软件 */
+      .software {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .software > li {
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .software > li:last-child {
+        border-bottom: 0;
+      }
+      .software h3 {
+        margin: 0;
+        display: flex;
+        gap: 0.6rem;
+        align-items: baseline;
+        flex-wrap: wrap;
+      }
+      .software h3 .lang-tag {
+        font-family: var(--mono);
+        font-size: var(--step-1);
+        color: var(--muted);
+        font-weight: 400;
+      }
+      pre {
+        font-family: var(--mono);
+        font-size: var(--step-1);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: 0.7rem 0.85rem;
+        overflow-x: auto;
+        margin: 0.6rem 0 0.5rem;
+      }
+
+      /* 履历 */
+      .cv dt {
+        font-family: var(--mono);
+        font-size: var(--step-1);
+        color: var(--muted);
+        float: left;
+        width: 8.5rem;
+        clear: left;
+        padding-top: 0.15rem;
+      }
+      .cv dd {
+        margin: 0 0 0.6rem 8.5rem;
+      }
+
+      footer.site {
+        font-family: var(--sans);
+        font-size: var(--step-1);
+        color: var(--muted);
+        padding-top: 2rem;
+        border-top: 1px solid var(--border);
+        margin-top: 3rem;
+      }
+
+      .note {
+        font-family: var(--sans);
+        font-size: var(--step-1);
+        color: var(--muted);
+        background: var(--surface);
+        border-left: 3px solid var(--accent);
+        padding: 0.7rem 0.9rem;
+        margin: 0 0 1.5rem;
+      }
+
+      @media (max-width: 30rem) {
+        .pubs > li {
+          grid-template-columns: 1fr;
+          gap: 0.15rem;
+        }
+        .year {
+          padding-top: 0;
+        }
+        .cv dt {
+          float: none;
+          width: auto;
+          display: block;
+        }
+        .cv dd {
+          margin-left: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="review-bar">
+      <strong>页面设计初稿</strong>
+      <span>设计稿专用说明条，正式站点不会有</span>
+      <span>·</span>
+      <a href="#home-a">首页方案 A</a>
+      <a href="#home-b">首页方案 B</a>
+      <a href="#pubs">Publications</a>
+      <a href="#research">Research</a>
+      <a href="#software">Software</a>
+      <a href="#cv">CV</a>
+    </div>
+
+    <section class="screen" id="home-a">
+      <p class="screen-label">
+        <b>首页 · 方案 A</b>
+        <span>名字直接开场，精选论文紧跟；最安静、最像正式学术主页</span>
+      </p>
+
+      <nav class="site">
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Research</a></li>
+          <li><a href="#">Publications</a></li>
+          <li><a href="#">Software</a></li>
+          <li><a href="#">CV</a></li>
+          <li><a href="#">Blog</a></li>
+        </ul>
+        <a class="lang" href="#">中文</a>
+      </nav>
+
+      <h1>Xiang Li</h1>
+      <p class="lead">
+        Postdoctoral Researcher · 机构名待填 · 城市待填
+      </p>
+      <p>
+        I study how oomycete pathogens deploy effector proteins, and how host
+        resistance shapes pathogen populations — combining genome assembly,
+        comparative genomics and population-scale resequencing in
+        <em>Phytophthora sojae</em> and its wild soybean hosts.
+      </p>
+      <p class="meta">
+        <a href="#">xiang@example.org</a> · <a href="#">GitHub</a> ·
+        <a href="#">ORCID</a> · <a href="#">Google Scholar</a>
+      </p>
+
+      <hr class="rule" />
+
+      <h2>Selected publications</h2>
+      <ul class="pubs">
+        <li>
+          <div class="year">2026</div>
+          <div>
+            <p class="pub-title">
+              示例占位：这里显示论文标题，由 BibTeX 自动生成
+            </p>
+            <p class="pub-authors">
+              <span class="me">Li X</span>, Author B, Author C
+              <span class="role">first author</span>
+            </p>
+            <p class="pub-venue">
+              <em>Journal Name</em>, 2026
+              <span class="links">· <a href="#">DOI</a> · <a href="#">PDF</a> · <a href="#">Code</a></span>
+            </p>
+          </div>
+        </li>
+        <li>
+          <div class="year">2025</div>
+          <div>
+            <p class="pub-title">
+              示例占位：第二条论文标题，展示换行与紧凑间距
+            </p>
+            <p class="pub-authors">
+              Author A, <span class="me">Li X</span>, Author C
+              <span class="role">co-first</span>
+            </p>
+            <p class="pub-venue">
+              <em>Another Journal</em>, 2025
+              <span class="links">· <a href="#">DOI</a></span>
+            </p>
+          </div>
+        </li>
+        <li>
+          <div class="year">2024</div>
+          <div>
+            <p class="pub-title">
+              示例占位：第三条论文标题，用于检验三条时的节奏
+            </p>
+            <p class="pub-authors"><span class="me">Li X</span>, Author B</p>
+            <p class="pub-venue">
+              <em>Preprint</em>, 2024
+              <span class="links">· <a href="#">DOI</a></span>
+            </p>
+          </div>
+        </li>
+      </ul>
+      <p class="meta"><a href="#">All publications →</a></p>
+
+      <h2>Recent notes</h2>
+      <ul>
+        <li>
+          <a href="#">示例：来自博客的一篇笔记标题</a>
+          <span class="meta"> · 2026-09</span>
+        </li>
+        <li>
+          <a href="#">示例：第二篇笔记标题</a>
+          <span class="meta"> · 2026-08</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="screen" id="home-b">
+      <p class="screen-label">
+        <b>首页 · 方案 B</b>
+        <span>像一篇论文的首页——简介与研究方向做成编号索引，信息密度更高，个性更强</span>
+      </p>
+
+      <nav class="site">
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Research</a></li>
+          <li><a href="#">Publications</a></li>
+          <li><a href="#">Software</a></li>
+          <li><a href="#">CV</a></li>
+          <li><a href="#">Blog</a></li>
+        </ul>
+        <a class="lang" href="#">中文</a>
+      </nav>
+
+      <h1>Xiang Li</h1>
+      <p class="lead">Postdoctoral Researcher · 机构名待填</p>
+
+      <ul class="index-list">
+        <li>
+          <p>
+            <span class="num">01</span><strong>Effector genomics.</strong>
+            Comparative and population genomics of the <em>P. sojae</em>
+            effector repertoire across field isolates.
+          </p>
+        </li>
+        <li>
+          <p>
+            <span class="num">02</span><strong>Host resistance.</strong>
+            Resequencing wild soybean populations to map resistance to
+            <em>Phytophthora</em> root and stem rot.
+          </p>
+        </li>
+        <li>
+          <p>
+            <span class="num">03</span><strong>NLR repertoires.</strong>
+            Annotation, phylogeny and manual curation of NBS-LRR families across
+            crops and their wild relatives.
+          </p>
+        </li>
+        <li>
+          <p>
+            <span class="num">04</span><strong>Open tooling.</strong>
+            R and Python toolkits (<a href="#">bioRtools</a>,
+            <a href="#">biopytools</a>) for routine analysis and figures.
+          </p>
+        </li>
+      </ul>
+
+      <h2>Selected publications</h2>
+      <ul class="pubs">
+        <li>
+          <div class="year">2026</div>
+          <div>
+            <p class="pub-title">示例占位：论文标题</p>
+            <p class="pub-venue">
+              <em>Journal Name</em>
+              <span class="links"> · <a href="#">DOI</a></span>
+            </p>
+          </div>
+        </li>
+        <li>
+          <div class="year">2025</div>
+          <div>
+            <p class="pub-title">示例占位：论文标题</p>
+            <p class="pub-venue">
+              <em>Journal Name</em>
+              <span class="links"> · <a href="#">DOI</a></span>
+            </p>
+          </div>
+        </li>
+      </ul>
+      <p class="meta"><a href="#">All publications →</a></p>
+    </section>
+
+    <section class="screen" id="pubs">
+      <p class="screen-label">
+        <b>Publications</b>
+        <span>本站视觉主角：年份挂在左侧等宽栏，按类型分区，外链统一收敛在行尾</span>
+      </p>
+
+      <h1>Publications</h1>
+      <p class="lead">
+        由 <code>content/publications.bib</code> 自动生成 · 按年份倒序
+      </p>
+
+      <h2>Journal articles</h2>
+      <ul class="pubs">
+        <li>
+          <div class="year">2026</div>
+          <div>
+            <p class="pub-title">示例占位标题一</p>
+            <p class="pub-authors">
+              <span class="me">Li X</span>, Zhang S, Wang Q
+              <span class="role">corresponding</span>
+            </p>
+            <p class="pub-venue">
+              <em>Journal of Example Research</em>, 2026, 12(3): 456–470
+              <span class="links">· <a href="#">DOI</a> · <a href="#">PDF</a></span>
+            </p>
+          </div>
+        </li>
+        <li>
+          <div class="year">2025</div>
+          <div>
+            <p class="pub-title">示例占位标题二，稍长一些，用来检验两行标题的间距是否仍然舒服</p>
+            <p class="pub-authors">Wang Q, <span class="me">Li X</span>, Zhang S</p>
+            <p class="pub-venue">
+              <em>Journal of Example Research</em>, 2025
+              <span class="links">· <a href="#">DOI</a></span>
+            </p>
+          </div>
+        </li>
+      </ul>
+
+      <h2>Preprints</h2>
+      <ul class="pubs">
+        <li>
+          <div class="year">2024</div>
+          <div>
+            <p class="pub-title">示例占位标题三</p>
+            <p class="pub-venue">
+              <em>bioRxiv</em>, 2024
+              <span class="links">· <a href="#">DOI</a></span>
+            </p>
+          </div>
+        </li>
+      </ul>
+
+      <h2>Conference papers</h2>
+      <p class="meta">示例占位：有会议论文时出现在这里</p>
+
+      <div class="note">
+        类型分区覆盖全部八类：期刊 / 会议 / 预印本 / 专著 / 书章 / 学位论文 /
+        报告 / 其他。没有内容的分类不显示，避免空标题。
+      </div>
+    </section>
+
+    <section class="screen" id="research">
+      <p class="screen-label">
+        <b>Research</b>
+        <span>每个方向一段话；关键词用小号无衬线，和中英双语切换配合</span>
+      </p>
+
+      <h1>Research</h1>
+
+      <div class="topic">
+        <h3>Effector genomics in oomycete pathogens</h3>
+        <p>
+          Comparative and population genomics of effector repertoires in
+          <em>Phytophthora sojae</em>, combining long-read assembly with
+          isolate-level resequencing to separate conserved core effectors from
+          rapidly evolving accessory ones.
+        </p>
+        <p class="tags">effector · Phytophthora sojae · pangenome</p>
+      </div>
+
+      <div class="topic">
+        <h3>Host resistance in wild soybean</h3>
+        <p>
+          Mapping resistance to <em>Phytophthora</em> root and stem rot in
+          <em>Glycine soja</em> populations, with BSA, CIM linkage mapping and
+          GWAS on the same material.
+        </p>
+        <p class="tags">Glycine soja · GWAS · QTL</p>
+      </div>
+    </section>
+
+    <section class="screen" id="software">
+      <p class="screen-label">
+        <b>Software</b>
+        <span>安装命令用等宽块，不用卡片；语言标签跟在名称后</span>
+      </p>
+
+      <h1>Software</h1>
+
+      <ul class="software">
+        <li>
+          <h3>bioRtools <span class="lang-tag">R</span></h3>
+          <p>
+            An R toolkit for routine bioinformatics analysis and publication
+            figures.
+          </p>
+          <pre><code>remotes::install_github("lixiang117423/bioRtools")</code></pre>
+          <p class="meta"><a href="#">Repository</a></p>
+        </li>
+        <li>
+          <h3>biopytools <span class="lang-tag">Python</span></h3>
+          <p>
+            Command-line utilities for genome annotation and population
+            analysis downstream steps.
+          </p>
+          <p class="meta"><a href="#">Repository</a></p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="screen" id="cv">
+      <p class="screen-label">
+        <b>CV</b>
+        <span>网页版只放时间线，完整信息走 PDF 下载</span>
+      </p>
+
+      <h1>CV</h1>
+      <p class="meta">
+        <a href="#">Download CV (English, PDF)</a> ·
+        <a href="#">下载简历（中文，PDF）</a>
+      </p>
+
+      <h2>Positions</h2>
+      <dl class="cv">
+        <dt>2025–</dt>
+        <dd>Postdoctoral Researcher, 机构名待填</dd>
+        <dt>2020–2025</dt>
+        <dd>PhD, 学校名待填</dd>
+      </dl>
+
+      <h2>Awards</h2>
+      <dl class="cv">
+        <dt>2024</dt>
+        <dd>示例占位：奖项名称</dd>
+      </dl>
+
+      <footer class="site">
+        <p>
+          xiang@example.org · <a href="#">GitHub</a> · <a href="#">Blog</a>
+        </p>
+        <p>© 2026 Xiang Li</p>
+      </footer>
+    </section>
+  </body>
+</html>
