@@ -2,6 +2,19 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-15 16:19 — Task 3 论文数据管道（BibTeX → JSON）完成
+
+- 按 `task-3-brief.md` 建 Python 数据管道：`content/publications.bib`（唯一权威源，**当前仅 2 行注释、0 条目**，真实论文待用户从 Zotero 导出后覆盖）→ `content/publications.json`（`{ generated_at, source, count, items }`，条目字段与 `src/lib/schemas.ts` 的 `publicationItem` 逐字段一致：13 个字段，`type` ∈ journal/preprint/conference、`authorRole` ∈ first/co-first/corresponding/co-author 与 zod 枚举对齐）。
+- **TDD 证据（RED）**：先写 `tests/test_sync_publications.py`（brief Step 2 逐字）并运行 `python3 -m pytest tests/test_sync_publications.py -v`，得到 `ModuleNotFoundError: No module named 'scripts.sync_publications'`（收集期 1 error、0 items）——因尚无 `pyproject.toml`，pytest 只把 `tests/` 而非项目根加入 `sys.path`，属预期失败。
+- **GREEN**：补 `pyproject.toml`（`pythonpath = ["."]` / `testpaths = ["tests"]`）+ `scripts/sync_publications.py` 后重跑，**2 passed**。
+- **偏离 brief 一处（重要，已按实测修正）**：brief Step 5 的原始代码用 `bibtexparser.load(handle)`，但本机装的是 **bibtexparser 2.1.0**，1.x 的 `load()` 已被移除——首次 GREEN 尝试即报 `AttributeError: module 'bibtexparser' has no attribute 'load'`（2 failed）。改为 `bibtexparser.parse_file()` + 把 `entry.fields`（`Field` 对象列表）归一化为 1.x 风格的「字段名小写 → 字符串」平铺字典后，**输出契约与 brief 测试未改**，2 passed。未执行任何 `pip install`（Step 1 已由现状满足：bibtexparser 2.1.0 / pytest 9.1.1 均在 `/Users/lixiang/miniforge3/envs/python` 内，本任务未改动任何 Python 环境）。
+- **回读自检（硬性要求）实跑**：`python3 scripts/sync_publications.py` 打印 `[INFO] 写入 .../content/publications.json（0 条）` 与 `[INFO] 回读自检通过：字段齐全、count 一致（0）`；回读核对 `count == len(items)`、落盘条数 == 生成条数、每条 13 字段齐全。因当前 0 条，字段齐全分支为空转，另在 `~/tmp/task3-probe` 做了两条独立验证：① 用 1 条真实记录的临时 `.bib` 跑 `main()` → 自检通过并打印完整 13 字段 JSON；② 注入缺字段条目 → `SystemExit` 打印 `[FATAL] 条目 bad 缺字段：[...]` 被拦下（证明该分支非空转）。以上探针均写在项目外，未污染仓库。
+- **验收门**：`python3 -m pytest tests/test_sync_publications.py -v` 2 passed；`pnpm test`（vitest 3.2.7）**15/15 PASS**；`pnpm build`（astro 5.18.2）成功、1 page built；`pnpm exec tsc --noEmit --incremental false` 退出码 0。构建日志仍有 1 条**预期告警** `[WARN] [file-loader] No items found in ./content/publications.json`（`items` 为空所致，`count: 0`），用户提供真实 `.bib` 并重跑脚本后消失。
+- 附带登记：`项目文件记录.md` 新增「站点源码（已创建：Task 3 论文数据管道）」小节（5 个新文件）、更新规划清单 3 行状态与「最后更新」时间；顺手把 `tests/content-schema.test.ts` 的过时描述「3 个用例」改为实测的「15 个用例」。另说明：pytest 会在项目内生成 `.pytest_cache/`，其自带 `.gitignore: *` 属于自忽略目录（`git check-ignore` 判定 NOT IGNORED 但目录内容全被忽略，故 `git status` 中不出现），未改动项目 `.gitignore`。
+- **收尾记录（两端）**：按 Obsidian 页面上登记的 2026-10-15 决定，本项目**只记 Obsidian、不进语雀**（本项目无生信分析模块，语雀那套不适用）——已在 `/Users/lixiang/NutstoreFiles/98.软件数据/Obsidian/obsidian/分析记录/my_academic_web.md` 末尾追加 `## 2026-10-15 16:21 — Task 3 论文数据管道（BibTeX → JSON）` 小节（①–⑦ 字段齐全，末尾 `→ 语雀模块页：—`），并把该页「项目概览 → 当前阶段」由「设计阶段、尚未写站点代码」更新为「实现阶段，Task 1–3 已完成并提交」。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改；未删除任何文件。
+- 提交：`feat(scripts): BibTeX 转 publications.json 数据管道`。
+
 ## 2026-10-15 16:05 — Task 2 复审修复（strict TS 与 schema 真实校验）
 
 - **Finding 1 修复（重要，计划缺陷）**：`tests/content-schema.test.ts` 引用 `node:fs` / `node:path` 但缺 `@types/node`，`pnpm exec tsc --noEmit --incremental false` 报 2 条 TS2307。按用户裁决（本次明确解除「不动 `package.json`」的约束）执行 `pnpm add -D '@types/node@^26'`，落地 `@types/node 26.6.5`（与本机 Node v26.11.1 对齐）。`package.json` 仅新增一行 devDependency；`pnpm-lock.yaml` 的改动为 astro / vite / vitest 的 `@types/node` peer 上下文与新增传递依赖 `undici-types`。**现 `tsc --noEmit --incremental false` 零输出、退出码 0。**
