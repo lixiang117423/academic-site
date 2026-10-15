@@ -231,7 +231,15 @@ export interface Publication {
   authors: string[];
   year: number;
   venue: string;
-  type: 'journal' | 'preprint' | 'conference';
+  type:
+    | 'journal'
+    | 'conference'
+    | 'preprint'
+    | 'book'
+    | 'book-chapter'
+    | 'thesis'
+    | 'report'
+    | 'other';
   doi: string | null;
   url: string | null;
   code: string | null;
@@ -343,7 +351,16 @@ const publicationItem = z.object({
   authors: z.array(z.string()),
   year: z.number().int(),
   venue: z.string(),
-  type: z.enum(['journal', 'preprint', 'conference']),
+  type: z.enum([
+    'journal',
+    'conference',
+    'preprint',
+    'book',
+    'book-chapter',
+    'thesis',
+    'report',
+    'other',
+  ]),
   doi: z.string().nullable(),
   url: z.string().nullable(),
   code: z.string().nullable(),
