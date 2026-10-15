@@ -2,6 +2,18 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-15 15:54 — Task 2 内容模型与 schema 校验完成
+
+- 按 `task-2-brief.md` 创建内容模型：`src/lib/types.ts`（`Localized` / `Locale` / `Publication` / `ResearchItem` / `SoftwareItem` / `SiteLink` / `FeaturedPost` / `SiteProfile` / `CvEntry` / `CvData`）、`src/content.config.ts`（Astro 5 Content Layer：`research`、`software`、`publicationsGenerated`、`site`、`cv` 五个集合）。
+- 创建内容文件：`content/site.yaml`、`content/cv.yaml`、`content/research/effector-genomics.md`、`content/software/biortools.md`；用户待提供的个人信息一律写占位串 `TODO: 待用户提供`，未臆造姓名、机构、邮箱与社交链接。
+- **控制器裁决落地（1 处）**：brief Step 8 要求 `pnpm build` 通过，但 `publicationsGenerated` 读取的 `content/publications.json` 属于 Task 3 产物，故按裁决新建该文件（内容为 `{"generated_at":"","source":"content/publications.bib","count":0,"items":[]}`，空 `items`）以打通构建；Task 3 将用真实数据重新生成并覆盖。该文件纳入本次提交。
+- 测试（TDD）：先写 `tests/content-schema.test.ts` 并运行 `pnpm test`，得到 RED——3 个用例全部 `ENOENT`（`content/site.yaml`、`content/research/effector-genomics.md`、`content/software/biortools.md` 尚未创建），属预期失败；补全内容文件后重跑 `pnpm test`，3/3 PASS（vitest 3.2.7，耗时 1 ms）。
+- 构建与运行时校验：`pnpm build`（astro 5.18.2）成功，1 page built，产出 `dist/index.html`；构建日志有一条预期告警 `[WARN] [file-loader] No items found in ./content/publications.json`（`items` 为空，Task 3 写入后会消失）。
+- 反向核验加载与校验结果（解码 `node_modules/.astro/data-store.json`）：条目 id 与 Task 4 约定一致——`site` 集合 id=`site`、`cv` 集合 id=`cv`、`research` id=`effector-genomics`、`software` id=`biortools`、`publicationsGenerated` 0 条（空数组不落库，符合预期）；四类条目均已通过 zod schema 校验（`cv` 保留 `education`/`positions`/`awards`/`talks` 四个键，`software.order` 默认值生效）。
+- 已知状态：`pnpm exec tsc --noEmit` 仅对新测试文件报 2 条 `node:fs` / `node:path` 类型缺失——`@types/node` 本机未安装（属依赖变更，超出本任务 brief 范围，未擅自添加）；`pnpm test` 与 `pnpm build` 两道验收门均通过。
+- 提交：`feat(content): 定义内容模型与 schema 校验`。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改；`package.json`、`pnpm-workspace.yaml` 未改动。
+
 ## 2026-10-15 15:42 — Task 1 脚手架与构建基线完成
 
 - 按 `task-1-brief.md` 创建 Astro 5 静态站最小脚手架：`package.json`、`astro.config.mjs`、`tsconfig.json`、`.editorconfig`、`src/pages/index.astro`，内容与 brief 逐字一致（`site: 'https://example.invalid'` 按 brief 保留为待定项占位）。
