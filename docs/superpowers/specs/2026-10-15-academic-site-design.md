@@ -60,7 +60,7 @@
 | --- | --- | --- | --- |
 | `/` · `/zh/` | Home / 首页 | 双语 | 姓名、职位、机构；一句话研究方向；精选论文 3–5 条（由 `publications.bib` 的 `annotation` 标记 `featured`）；最新笔记外链（来自 `site.yaml` 的 `featuredPosts`）；联系方式区块 |
 | `/about` · `/zh/about` | About / 关于 | 双语 | 履历摘要、研究兴趣、完整联系方式与社交链接 |
-| `/research` · `/zh/research` | Research / 研究方向 | 双语 | 按 `order` 排序的研究方向条目，每个方向一段摘要；`content/research/*.md` 自带完整正文 |
+| `/research` · `/zh/research` | Research / 研究方向 | 双语 | 按 `order` 排序的研究方向条目，每个方向一段摘要（中英各一版，中文缺失回退英文） |
 | `/publications` | Publications | **仅英文** | 论文题录全部内容，按年份倒序、按类型分区（期刊论文 / 预印本 / 会议）；每条含 DOI / PDF / Code 链接 |
 | `/software` · `/zh/software` | Software / 软件 | 双语 | 每个软件一张紧凑条目：名称、一句话说明、语言、安装命令、仓库链接 |
 | `/cv` · `/zh/cv` | CV / 简历 | 双语 | 网页版简短时间线（教育、职位、代表性成果）；下载中英两份 PDF |
@@ -154,7 +154,7 @@
 | `keywords` | 否 | 数组，与 `publications.json` 的 `keywords` 对应，用于自动关联相关论文 |
 | `image` | 否 | 图片路径（相对 `public/`） |
 
-正文为 Markdown，中英各一份：`content/research/<slug>.en.md` 与 `<slug>.zh.md`（中文文件可缺失）。
+**2026-10-15 修订**：原方案让中英各一个文件、各自携带一份 frontmatter，同一份 `title` / `summary` 要在两处重复维护，迟早漂移；改为**一个方向一个文件** `content/research/<slug>.md`，`title` 与 `summary` 各自带 `{ en, zh }` 双语字段、只写一份。正文不单独维护——`summary` 字段本身可容纳一段到两段描述，Research 页直接展示它。将来确实需要长正文时再加详情页，不提前引入。
 
 ### 5.5 `content/software/*.md`
 
