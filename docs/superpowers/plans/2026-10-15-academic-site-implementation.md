@@ -834,7 +834,7 @@ git commit -m "feat(scripts): BibTeX 转 publications.json 数据管道"
 - Create: `src/lib/i18n.ts`
 - Create: `src/lib/data-source.ts`
 - Create: `tests/i18n.test.ts`
-- Create: `tests/data-source.test.ts`
+- Create: `tests/data-select.test.ts`
 
 **Interfaces:**
 - Consumes: Task 2 的 `src/lib/types.ts` 与 Astro 集合；Task 3 的 `content/publications.json`
@@ -1255,7 +1255,7 @@ hr {
 
 ```astro
 ---
-import { getSiteProfile, type PublicationQuery } from '../lib/data-source';
+import { getSiteProfile } from '../lib/data-source';
 import { pick } from '../lib/i18n';
 import type { Locale } from '../lib/types';
 import LangSwitch from './LangSwitch.astro';
