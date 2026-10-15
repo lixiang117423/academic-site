@@ -2,6 +2,18 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-15 15:42 — Task 1 脚手架与构建基线完成
+
+- 按 `task-1-brief.md` 创建 Astro 5 静态站最小脚手架：`package.json`、`astro.config.mjs`、`tsconfig.json`、`.editorconfig`、`src/pages/index.astro`，内容与 brief 逐字一致（`site: 'https://example.invalid'` 按 brief 保留为待定项占位）。
+- `pnpm install` 生成 `pnpm-lock.yaml` 与 `node_modules/`；实际解析版本为 astro 5.18.2、yaml 2.9.1、typescript 5.9.3、vitest 3.2.7。
+- **环境处置（重要）**：pnpm 11 默认拦截依赖构建脚本，`pnpm install` 因此以 `ERR_PNPM_IGNORED_BUILDS`（esbuild / sharp）退出码 1，并连带使 `astro build` 的依赖预检失败。已用 `pnpm approve-builds --all` 批准 esbuild + sharp，该操作**未改动 `package.json`**（diff 为空），另生成 43 字节的 `pnpm-workspace.yaml`（`allowBuilds: esbuild/sharp`）并纳入提交；这是让 `pnpm build` 可用的最小改动。
+- 构建验证通过：`pnpm build` 成功产出 `dist/index.html`（`src/pages/index.astro → /index.html`），`test -f .../dist/index.html && echo BUILD_OK` 打印 `BUILD_OK`。
+- `git status --short` 中未出现 `node_modules/`、`dist/`、`.astro/`，`.superpowers/` 亦未出现（该目录用自身 `.gitignore` 自忽略）——符合 Step 8 预期。
+- 已知状态：`pnpm test`（`vitest run`）当前因**尚无测试文件**而以退出码 1 结束（`No test files found`），属预期；测试用例在后续任务引入。
+- 提交：`chore(scaffold): 初始化 Astro 静态站与构建基线`。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改。
+- 遗留提醒：`pnpm install` 会向坚果云同步盘写入大量小文件，执行期间建议暂停坚果云同步（本轮未能由 AI 代为暂停）。
+
 ## 2026-10-15 15:34 — 设计方案复审通过、实现计划落档
 
 - 用户复审确认设计方案（spec），并决定：**本项目只记 Obsidian、不进语雀**（语雀那套是生信分析记录规范，本项目无对应分析模块）；该记录已写入 `/Users/lixiang/NutstoreFiles/98.软件数据/Obsidian/obsidian/分析记录/my_academic_web.md`，并在库索引 `00_分析记录总览.md` 补登一行。

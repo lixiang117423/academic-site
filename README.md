@@ -10,7 +10,7 @@
 
 ## 当前状态
 
-**设计阶段**。设计方案已完成待复审，尚未开始写站点代码。
+**脚手架阶段**。Task 1 已完成：Astro 静态站最小脚手架就位，`pnpm build` 可通过并产出 `dist/index.html`；页面内容待后续任务实现。
 
 - 设计方案（唯一权威）：`docs/superpowers/specs/2026-10-15-academic-site-design.md`
 - 项目规则：`AGENTS.md`
