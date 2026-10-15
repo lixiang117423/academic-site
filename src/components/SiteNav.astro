@@ -13,6 +13,7 @@ const { locale, currentPath } = Astro.props;
 const site = await getSiteProfile();
 
 const prefix = locale === 'zh' ? '/zh' : '';
+const homeHref = locale === 'zh' ? '/zh/' : '/';
 
 // Publications 只有英文版（spec §4.1），故该条不带语言前缀
 const items = [
@@ -29,24 +30,28 @@ const isCurrent = (href: string) =>
 ---
 
 <nav class="site-nav wrap" aria-label="Primary">
-  <ul>
-    {
-      items.map((item) => (
-        <li>
-          <a
-            href={item.href}
-            aria-current={isCurrent(item.href) ? 'page' : undefined}
-          >
-            {pick(locale, item.label)}
-          </a>
-        </li>
-      ))
-    }
-    <li>
-      <a href={site.blog.url} rel="me noopener">{pick(locale, site.blog.label)}</a>
-    </li>
-  </ul>
-  <LangSwitch locale={locale} currentPath={currentPath} />
+  {/* 站点身份兼首页入口：可视稿是静态稿，没有第二个页面可演示，故未画这一项 */}
+  <a class="site-name" href={homeHref}>{pick(locale, site.name)}</a>
+  <div class="nav-links">
+    <ul>
+      {
+        items.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              aria-current={isCurrent(item.href) ? 'page' : undefined}
+            >
+              {pick(locale, item.label)}
+            </a>
+          </li>
+        ))
+      }
+      <li>
+        <a href={site.blog.url} rel="me noopener">{pick(locale, site.blog.label)}</a>
+      </li>
+    </ul>
+    <LangSwitch locale={locale} currentPath={currentPath} />
+  </div>
 </nav>
 
 <style>
@@ -61,6 +66,19 @@ const isCurrent = (href: string) =>
     border-bottom: 1px solid var(--border);
     font-family: var(--font-sans);
     font-size: var(--step-1);
+  }
+
+  /* 站点名：比导航项大一档、加粗，读起来是身份而不是又一个链接 */
+  .site-name {
+    font-size: var(--step1);
+    font-weight: 600;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 1rem;
   }
 
   ul {

@@ -2,6 +2,16 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-15 17:15 — Task 5 复审修复（导航补首页入口 / 记录表去临时探针）
+
+- **Finding 1（Important，控制端裁定为真实缺陷）**：`SiteNav.astro` 没有回首页的入口，Task 6–9 换掉 `index.astro` 后每个内页都成死胡同。修复：把**站点名**做成指向首页的链接放在导航最左（`/` for `en`、`/zh/` for `zh`），文案取 `getSiteProfile()` 的 `name` 经 `pick()` 渲染；**没有**新增第七个「Home」导航项。样式按「身份」而非「导航项」处理：`font-size: var(--step1)`（19px）+ `font-weight: 600`，默认无下划线、颜色沿用 `--text`，hover 走既有的 `a:hover`（强调色 + 下划线），focus 走全局 `a:focus-visible`（2px 强调色外描边）。结构上把语言切换器并入新的 `.nav-links` 包裹层，使桌面端保持「名称在左、链接与语言切换在右」。
+- **Minor 2（控制端裁定为真实缺陷）**：`项目文件记录.md` 的 Task 5 小节里登记了被 `.superpowers/sdd/.gitignore` 忽略的临时探针 `tmp-probe/task5-measure.html`——该行已删除（文件本身保留备查，未删除）。其余结构未动。
+- **未改动的三条（控制端裁定非缺陷/延后）**：① 页脚链接保持强调色 `#1e4e8c`（可视稿里 `a { color: var(--accent) }` 是元素级显式声明，胜过 `footer.site` 的容器级继承，实测 `rgb(30,78,140)` 与可视稿一致）；② `LangSwitch.astro` 的三元表达式不改（它写的是**目标语言**的写法，不是双语内容字段）；③ skip-to-content / 额外 landmark 属可选打磨，未做。
+- **验收（提交前实跑）**：`pnpm build`（astro 5.18.2）→ **Complete!**、1 page built；`pnpm test` → **25/25 PASS**；`pnpm exec tsc --noEmit --incremental false` → 退出码 0、无输出；CDN grep → **NO_CDN**。
+- **浏览器实测（headless Chrome + 临时探针，含 /cv 与 /zh/cv 两个注入路由，非目视）**：375px 下 `scrollWidth == clientWidth`（index / cv / zh-cv 三页均 375：无横向滚动）；站点名链接 `href` 分别为 `/`（en）与 `/zh/`（zh）、左内边距 20px（= `1.25rem`，确在最左）、19px/600、`#24292f`、默认无下划线；hover 规则 `a[data-astro-cid-…]:hover{color:var(--accent);text-decoration:underline}` 的选择器命中该链接、focus 后紧接外描边实测 `2px rgb(30, 78, 140)`；`nav aria-label="Primary"` 保持；`aria-current` 仍正确落在 `/cv` 与 `/zh/cv`；语言切换 `altPath` 双向正确。1200px 下导航内容框 640px 居中，名称 300..461、链接 509..858、语言切换 874..900（右内边距 20px），即「名称在左、链接与语言切换在右」的单行排布。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改；未删除任何文件。
+- 提交：`fix(ui): 导航补首页入口并清理临时探针登记`。
+
 ## 2026-10-15 17:03 — Task 5 设计令牌与基础布局
 
 - 按 `task-5-brief.md` 建基础层：`src/styles/tokens.css`（设计令牌，明暗两套变量）、`src/styles/global.css`（全局基础样式，全站唯一 CSS 入口，`@import` tokens）、`src/layouts/BaseLayout.astro`（HTML 骨架 + meta + 导航 + 页脚，接收 `locale / title / description`）、`src/components/SiteNav.astro`、`src/components/LangSwitch.astro`、`src/components/SiteFooter.astro`；`src/pages/index.astro` 由占位页改为使用 `BaseLayout` 的最小页（Task 6 会写正式首页内容）。
