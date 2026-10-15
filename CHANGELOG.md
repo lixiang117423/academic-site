@@ -2,6 +2,17 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-15 16:05 — Task 2 复审修复（strict TS 与 schema 真实校验）
+
+- **Finding 1 修复（重要，计划缺陷）**：`tests/content-schema.test.ts` 引用 `node:fs` / `node:path` 但缺 `@types/node`，`pnpm exec tsc --noEmit --incremental false` 报 2 条 TS2307。按用户裁决（本次明确解除「不动 `package.json`」的约束）执行 `pnpm add -D '@types/node@^26'`，落地 `@types/node 26.6.5`（与本机 Node v26.11.1 对齐）。`package.json` 仅新增一行 devDependency；`pnpm-lock.yaml` 的改动为 astro / vite / vitest 的 `@types/node` peer 上下文与新增传递依赖 `undici-types`。**现 `tsc --noEmit --incremental false` 零输出、退出码 0。**
+- **Finding 2 修复（重要，计划缺陷）**：原测试只对文件原文做 `toContain`，不加载集合、不执行 zod schema。新增 `src/lib/schemas.ts`（7 个 schema 值，**不 import `astro:content`**），`src/content.config.ts` 改为只保留 loader 与 `defineCollection` 接线、schema 从该模块导入；行为与集合名未变（`research` / `software` / `publicationsGenerated` / `site` / `cv`，`site`、`cv` 固定 id）。
+- **schema 迁移忠实性核验**：脚本比对 `git show HEAD:src/content.config.ts` 与新的 `src/lib/schemas.ts`，7 个 `z.object(...)` 表达式逐字一致（仅 research / software 两处因不再嵌套而缩进由 4 空格变 2 空格），结论「ALL 7 SCHEMAS MOVED VERBATIM」。
+- 测试重写：`tests/content-schema.test.ts` 现为 **15 个用例**——真实内容校验（`site.yaml`→`siteProfileSchema`、`cv.yaml`→`cvSchema`、`publications.json` 每个 item→`publicationItem`、research 与 software 的 frontmatter→各自 schema）+ 10 个反例（非法 `type`/`authorRole` 枚举、缺 `title`、`year` 非整数、`venue` 被改名、缺 `language`、`order` 非整数、`blog.url` 非 URL、cv 条目缺 `org`），并含「合法条目必须通过」的对照组防止 `toThrow` 恒真。
+- **变异测试（证明新测试不是空转）**：在 `~/tmp/task2-mutation` 的临时副本上（项目文件未改）分别注入 ① `publicationItem.venue`→`venueName`、② 从 `type` 枚举删除 `conference`。结果：**旧测试对 ① 仍 3/3 PASS（空转，正是复审指出的缺陷）；新测试对 ① 报 3 failed、对 ② 报 1 failed**——新测试确实能拦住字段改名与枚举缺失。
+- **修复后三关门全部通过**：`pnpm test` 15/15 PASS（vitest 3.2.7）；`pnpm exec tsc --noEmit --incremental false` 退出码 0、无输出；`pnpm build`（astro 5.18.2）成功，1 page built。另解码 `node_modules/.astro/data-store.json` 复核重构后运行时行为未变：`site`→id `site`、`cv`→id `cv`、`research`→`effector-genomics`、`software`→`biortools`，校验后数据与重构前逐字段相同。
+- 顺手修复（复审 Minor 项）：`src/lib/types.ts` 的 `ResearchItem` 补 `image?: string`（与 research schema 的 `image` 可选字段对齐）；`项目文件记录.md` 中过时标题「站点源码（规划中，尚未创建）」改为「站点源码（规划清单与当前状态）」，并登记 `src/lib/schemas.ts`。
+- 提交：`fix(content): 补 @types/node 并让 schema 测试真实校验内容`。
+
 ## 2026-10-15 15:54 — Task 2 内容模型与 schema 校验完成
 
 - 按 `task-2-brief.md` 创建内容模型：`src/lib/types.ts`（`Localized` / `Locale` / `Publication` / `ResearchItem` / `SoftwareItem` / `SiteLink` / `FeaturedPost` / `SiteProfile` / `CvEntry` / `CvData`）、`src/content.config.ts`（Astro 5 Content Layer：`research`、`software`、`publicationsGenerated`、`site`、`cv` 五个集合）。

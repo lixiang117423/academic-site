@@ -28,6 +28,7 @@ export interface ResearchItem {
   summary: Localized;
   order: number;
   keywords: string[];
+  image?: string;
 }
 
 export interface SoftwareItem {
