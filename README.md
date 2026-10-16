@@ -12,7 +12,13 @@
 
 **站点已可构建、可浏览（2026-10-16）**。`pnpm build` 产出 12 个页面：`/`、`/zh/`、`/publications`、`/research`、`/zh/research`、`/software`、`/zh/software`、`/cv`、`/zh/cv`、`/about`、`/zh/about`、`404`，外加 `robots.txt` 与 `sitemap-index.xml`。
 
-**内容仍是占位**：`content/site.yaml` 里姓名 / 机构 / 职位 / 邮箱 / `intro` 等为 `TODO: 待用户提供`，`links`、`featuredPosts`、`selfAuthors` 为空，`content/publications.bib` 只有注释行。填入真实资料后重跑 `python3 scripts/sync_publications.py` 即可。
+**内容已换成真实资料（2026-10-16 15:47）**，站点内已无占位串：
+
+- `content/site.yaml`：姓名 / 职位 / 机构 / 地点 / 邮箱 / 简介（`bio`）/ GitHub 与 Google Scholar 链接 / 5 篇博客外链；`selfAuthors` 用于论文作者行加粗。
+- `content/publications.bib`：9 条（8 篇已发表 + 1 篇 bioRxiv 预印本），**DOI 逐条经 Crossref 核验**；由 `scripts/sync_publications.py` 生成 `publications.json`。
+- `content/research/` 5 个研究方向、`content/software/` 5 个工具（bioRtools、biopytools、DeepBSA-rs、qPCRtools、ggmotif）。
+- `content/cv.yaml`：教育 3 条、工作 2 条、获奖 2 条；报告段（`talks`）为空，页面不渲染该标题。
+- `public/cv/cv-en.pdf` 与 `cv-zh.pdf`：由 `scripts/build_cv_pdf.py` 从上述数据生成（A4、中文字体已内嵌）；`public/avatar.jpg`、`public/favicon.svg`、`public/favicon.png` 已放。
 
 **待定**：域名与托管平台（spec §12）。域名确定后需同时替换 `astro.config.mjs` 的 `site` 与 `public/robots.txt` 的 Sitemap 行。
 
@@ -44,8 +50,11 @@ Python 数据管道（需 `/Users/lixiang/miniforge3/envs/python/bin/python3`）
 
 ```bash
 /Users/lixiang/miniforge3/envs/python/bin/python3 scripts/sync_publications.py
+/Users/lixiang/miniforge3/envs/python/bin/python3 scripts/build_cv_pdf.py --force   # 改完 cv.yaml / site.yaml 后重生成两份 CV PDF
 /Users/lixiang/miniforge3/envs/python/bin/python3 -m pytest tests/test_sync_publications.py -v
 ```
+
+改内容后建议实跑一遍：`pnpm test && pnpm build`（schema 校验 + 双语回退 + 构建）。
 
 ## 两条硬约束
 

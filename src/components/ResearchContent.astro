@@ -1,6 +1,7 @@
 ---
 import { listResearch } from '../lib/data-source';
 import { pick } from '../lib/i18n';
+import { emphasis } from '../lib/rich-text';
 import type { Locale } from '../lib/types';
 
 interface Props {
@@ -24,9 +25,13 @@ const items = await listResearch();
 
 {items.map((item) => (
   <section>
-    <h2>{pick(locale, item.title)}</h2>
-    <p>{pick(locale, item.summary)}</p>
-    {item.keywords.length > 0 && <p class="meta">{item.keywords.join(' · ')}</p>}
+    <h2 set:html={emphasis(pick(locale, item.title))} />
+    <p set:html={emphasis(pick(locale, item.summary))} />
+    {
+      item.keywords.length > 0 && (
+        <p class="meta" set:html={emphasis(item.keywords.join(' · '))} />
+      )
+    }
   </section>
 ))}
 

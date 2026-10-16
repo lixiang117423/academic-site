@@ -1,24 +1,48 @@
 name:
-  en: "TODO: 待用户提供"
-  zh: "TODO: 待用户提供"
+  en: "Xiang Li"
+  zh: "李详"
 title:
-  en: "TODO: 待用户提供"
-  zh: "TODO: 待用户提供"
+  en: "Postdoctoral Researcher"
+  zh: "博士后"
 affiliation:
-  en: "TODO: 待用户提供"
-  zh: "TODO: 待用户提供"
+  en: "Yazhouwan National Laboratory"
+  zh: "崖州湾国家实验室"
 intro:
-  en: "TODO: 待用户提供"
-  zh: "TODO: 待用户提供"
-location: "TODO: 待用户提供"
-email: "TODO: 待用户提供"
+  en: "Genomics of plant disease resistance — mining NLR immune receptors and resistance loci in wild soybean and other crop wild relatives."
+  zh: "植物抗病基因组学——在野生大豆等作物野生近缘种中挖掘 NLR 免疫受体与抗病位点。"
+bio:
+  en: "I am a postdoctoral researcher in the Crop Disease Resistance Mechanisms and Technology Team at Yazhouwan National Laboratory, working with Jianmin Zhou. My work uses genome and population-scale sequencing to locate disease-resistance genes in crops and their wild relatives: I built PlantNLRatlas, a dataset of NLR resistance genes across 100 chromosome-level plant genomes, and I am currently building a wild soybean (*Glycine soja*) germplasm and pan-genome resource to mine resistance loci and genes. I received my PhD in plant pathology from Yunnan Agricultural University in 2025, including a research stay at INRAE's Plant Health Institute of Montpellier, and I maintain open-source analysis tools such as qPCRtools, ggmotif, bioRtools and biopytools."
+  zh: "我是崖州湾国家实验室作物抗病机制与技术团队的博士后，合作导师周俭民。主要用基因组与群体尺度测序手段，在作物及其野生近缘种中定位抗病基因：构建了覆盖 100 个染色体级植物基因组的 NLR 抗病基因数据集 PlantNLRatlas，现阶段正在建设野生大豆（*Glycine soja*）种质资源与泛基因组，用于挖掘抗病位点与基因。2025 年于云南农业大学获植物病理学博士学位，博士期间曾在法国国家农业食品与环境研究院（INRAE）蒙彼利埃植物健康研究所开展联合研究，并维护 qPCRtools、ggmotif、bioRtools、biopytools 等开源分析工具。"
+location: "Sanya, Hainan, China"
+email: "lixiang117423@gmail.com"
 # 本人作者名：逐字照抄 BibTeX author 字段里的写法（如 "Li X"），
 # 一种拼写一行；留空数组表示论文作者行不做任何加粗强调。
-selfAuthors: []
-links: []
+selfAuthors: ["Li, Xiang"]
+links:
+  - label: "GitHub"
+    url: "https://github.com/lixiang117423"
+    icon: "github"
+  - label: "Google Scholar"
+    url: "https://scholar.google.com/citations?user=Jm3A-mcAAAAJ"
+    icon: "scholar"
 blog:
   label:
     en: "Blog"
     zh: "博客"
   url: "https://lixiang117423.github.io"
-featuredPosts: []
+featuredPosts:
+  - title: "配置DeepTMHMM环境"
+    url: "https://lixiang117423.github.io/article/deeptmhmm/"
+    date: "2026-07-02"
+  - title: "配置QIIME2的conda环境"
+    url: "https://lixiang117423.github.io/article/qiime2-env/"
+    date: "2026-06-24"
+  - title: "月季泛基因组文章的代码"
+    url: "https://lixiang117423.github.io/article/yuejipangenomecode/"
+    date: "2026-04-22"
+  - title: "EGAPx文档中文版-AI生成"
+    url: "https://lixiang117423.github.io/article/egxpa-cn/"
+    date: "2026-04-17"
+  - title: "8000份大豆重测序数据文章的流程"
+    url: "https://lixiang117423.github.io/article/soybean8000/"
+    date: "2026-01-19"

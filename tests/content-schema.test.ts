@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import {
@@ -46,9 +46,34 @@ describe('content 文件通过 schema 校验', () => {
   it('site.yaml 通过 siteProfileSchema', () => {
     const parsed = siteProfileSchema.parse(parseYaml(read('content/site.yaml')));
     expect(parsed.blog.label).toEqual({ en: 'Blog', zh: '博客' });
-    expect(parsed.name.en).toBe('TODO: 待用户提供');
-    expect(parsed.links).toEqual([]);
-    expect(parsed.featuredPosts).toEqual([]);
+    // 站点资料由用户维护：断言结构与「非空」，不锁定具体取值，
+    // 否则每次改姓名 / 换邮箱 / 增删链接都要跟着改测试。
+    expect(parsed.name.en.trim()).not.toBe('');
+    expect(parsed.name.zh?.trim()).not.toBe('');
+    expect(parsed.title.en.trim()).not.toBe('');
+    expect(parsed.affiliation.en.trim()).not.toBe('');
+    expect(parsed.intro.en.trim()).not.toBe('');
+    expect(parsed.bio.en.trim()).not.toBe('');
+    expect(parsed.bio.zh?.trim()).not.toBe('');
+    expect(parsed.location.trim()).not.toBe('');
+    expect(parsed.email.trim()).not.toBe('');
+    expect(parsed.email).toContain('@');
+  });
+
+  it('site.yaml 的 links 与 featuredPosts 每项字段非空', () => {
+    const parsed = siteProfileSchema.parse(parseYaml(read('content/site.yaml')));
+    expect(parsed.links.length).toBeGreaterThan(0);
+    for (const link of parsed.links) {
+      expect(link.label.trim()).not.toBe('');
+      expect(link.url).toMatch(/^https?:\/\//);
+      expect(link.icon.trim()).not.toBe('');
+    }
+    expect(parsed.featuredPosts.length).toBeGreaterThan(0);
+    for (const post of parsed.featuredPosts) {
+      expect(post.title.trim()).not.toBe('');
+      expect(post.url).toMatch(/^https?:\/\//);
+      expect(post.date.trim()).not.toBe('');
+    }
   });
 
   it('cv.yaml 通过 cvSchema，四个分组都存在', () => {
@@ -77,21 +102,55 @@ describe('content 文件通过 schema 校验', () => {
     const parsed = researchSchema.parse(
       frontmatter('content/research/effector-genomics.md')
     );
-    expect(parsed.title.en).toBe('Effector genomics in oomycete pathogens');
-    expect(parsed.title.zh).toBe('卵菌效应子的基因组学解析');
-    expect(parsed.summary.en).toContain('Phytophthora sojae');
-    expect(parsed.order).toBe(1);
-    expect(parsed.keywords).toContain('effector');
+    expect(parsed.title.en.trim()).not.toBe('');
+    expect(parsed.title.zh?.trim()).not.toBe('');
+    expect(parsed.summary.en.trim()).not.toBe('');
+    expect(parsed.summary.zh?.trim()).not.toBe('');
+    expect(parsed.order).toBeGreaterThan(0);
+    for (const keyword of parsed.keywords) {
+      expect(keyword.trim()).not.toBe('');
+    }
+  });
+
+  it('content/research 下每个方向都通过 researchSchema 且 order 唯一', () => {
+    const files = readdirSync(resolve(ROOT, 'content/research'))
+      .filter((name) => name.endsWith('.md'))
+      .sort();
+    expect(files.length).toBeGreaterThan(0);
+    const orders = files.map((name) => {
+      const rel = `content/research/${name}`;
+      const parsed = researchSchema.parse(frontmatter(rel));
+      expect(parsed.title.en.trim(), rel).not.toBe('');
+      expect(parsed.summary.en.trim(), rel).not.toBe('');
+      return parsed.order;
+    });
+    expect(new Set(orders).size).toBe(orders.length);
   });
 
   it('software frontmatter 通过 softwareSchema（repo / language 为必需字段）', () => {
     const parsed = softwareSchema.parse(
       frontmatter('content/software/biortools.md')
     );
-    expect(parsed.name).toBe('bioRtools');
-    expect(parsed.repo).toBe('https://github.com/lixiang117423/bioRtools');
-    expect(parsed.language).toBe('R');
-    expect(parsed.order).toBe(1);
+    expect(parsed.name.trim()).not.toBe('');
+    expect(parsed.repo).toMatch(/^https:\/\/github\.com\//);
+    expect(parsed.language.trim()).not.toBe('');
+    expect(parsed.order).toBeGreaterThan(0);
+  });
+
+  it('content/software 下每个条目都通过 softwareSchema 且 order 唯一', () => {
+    const files = readdirSync(resolve(ROOT, 'content/software'))
+      .filter((name) => name.endsWith('.md'))
+      .sort();
+    expect(files.length).toBeGreaterThan(0);
+    const orders = files.map((name) => {
+      const rel = `content/software/${name}`;
+      const parsed = softwareSchema.parse(frontmatter(rel));
+      expect(parsed.name.trim(), rel).not.toBe('');
+      expect(parsed.tagline.en.trim(), rel).not.toBe('');
+      expect(parsed.repo, rel).toMatch(/^https?:\/\//);
+      return parsed.order;
+    });
+    expect(new Set(orders).size).toBe(orders.length);
   });
 });
 

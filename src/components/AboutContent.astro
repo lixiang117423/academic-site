@@ -1,6 +1,7 @@
 ---
 import { getSiteProfile } from '../lib/data-source';
 import { pick } from '../lib/i18n';
+import { emphasis } from '../lib/rich-text';
 import type { Locale } from '../lib/types';
 
 interface Props {
@@ -11,22 +12,29 @@ const { locale } = Astro.props;
 const site = await getSiteProfile();
 
 const hasEmail = site.email.trim() !== '' && !site.email.startsWith('TODO');
+
+// 头像 alt 文案按语言给：中文用姓名中文写法，英文用英文写法
+const avatarAlt = pick(locale, {
+  en: `Portrait of ${site.name.en}`,
+  zh: `${site.name.zh ?? site.name.en}的头像`,
+});
 ---
 
-<h1>{pick(locale, { en: 'About', zh: '关于' })}</h1>
+<header class="about-head">
+  <img class="avatar" src="/avatar.jpg" width="132" height="132" alt={avatarAlt} />
+  <div>
+    <h1>{pick(locale, { en: 'About', zh: '关于' })}</h1>
+    <p>
+      {pick(locale, site.name)} · {pick(locale, site.title)} · {pick(
+        locale,
+        site.affiliation
+      )}
+    </p>
+  </div>
+</header>
 
 <p>
-  {pick(locale, site.name)} · {pick(locale, site.title)} · {pick(
-    locale,
-    site.affiliation
-  )}
-</p>
-
-<p>
-  {pick(locale, {
-    en: 'Biography pending.',
-    zh: '个人简介待补充。',
-  })}
+  <span set:html={emphasis(pick(locale, site.bio))} />
 </p>
 
 <h2>{pick(locale, { en: 'Contact', zh: '联系方式' })}</h2>
@@ -47,9 +55,28 @@ const hasEmail = site.email.trim() !== '' && !site.email.startsWith('TODO');
 </ul>
 
 <style>
+  /*
+   * 头像与身份行并排；窄屏自动换行堆叠。不设圆角与阴影——与 spec §9.1
+   * 「结构靠排版建立，不靠卡片、圆角、阴影」一致，只留一条极细边框。
+   */
+  .about-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem;
+    margin-block: 3rem 1rem;
+  }
+
+  .avatar {
+    flex: none;
+    width: 8.25rem;
+    height: auto;
+    border: 1px solid var(--border);
+  }
+
   h1 {
     font-size: var(--step3);
-    margin-block: 3rem 1rem;
+    margin: 0 0 0.35rem;
   }
 
   h2 {

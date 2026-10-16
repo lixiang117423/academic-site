@@ -1,4 +1,75 @@
-education: []
-positions: []
-awards: []
+education:
+  - start: "2021-09"
+    end: "2025-06"
+    title:
+      en: "PhD in Plant Pathology"
+      zh: "植物病理学 博士"
+    org:
+      en: "Yunnan Agricultural University"
+      zh: "云南农业大学"
+    note:
+      en: "Dissertation: Study on Mechanism of Intra-specific Interactions Inducing Plant Resistance Among Acuce Pure Lines (advisors: Youyong Zhu and Huichuan Huang)"
+      zh: "博士学位论文《月亮谷纯系互作诱导植株抗病性的机制研究》（导师：朱有勇、黄惠川）"
+  - start: "2018-09"
+    end: "2021-06"
+    title:
+      en: "MSc in Plant Pathology"
+      zh: "植物病理学 硕士"
+    org:
+      en: "Yunnan Agricultural University"
+      zh: "云南农业大学"
+  - start: "2014-09"
+    end: "2018-06"
+    title:
+      en: "BSc in Plant Protection"
+      zh: "植物保护 学士"
+    org:
+      en: "Yunnan Agricultural University"
+      zh: "云南农业大学"
+
+positions:
+  - start: "2025-06"
+    end: "Present"
+    title:
+      en: "Postdoctoral Researcher"
+      zh: "博士后"
+    org:
+      en: "Yazhouwan National Laboratory"
+      zh: "崖州湾国家实验室"
+    note:
+      en: "Crop Disease Resistance Mechanisms and Technology Team; advisor: Jianmin Zhou"
+      zh: "作物抗病机制与技术团队；合作导师：周俭民"
+  - start: "2022-03"
+    end: "2022-12"
+    title:
+      en: "Visiting PhD Researcher"
+      zh: "访问研究（联合培养）"
+    org:
+      en: "INRAE — Plant Health Institute of Montpellier"
+      zh: "法国国家农业食品与环境研究院 蒙彼利埃植物健康研究所"
+    note:
+      en: "Host: Jean-Benoit Morel"
+      zh: "合作导师：Jean-Benoit Morel"
+
+awards:
+  - start: "2024"
+    end: "2024"
+    title:
+      en: "Youyong Scholarship"
+      zh: "有勇奖学金"
+    org:
+      en: "Yunnan Agricultural University"
+      zh: "云南农业大学"
+  - start: "2022"
+    end: "2023"
+    title:
+      en: "First-Class University Scholarship"
+      zh: "校级一等奖学金"
+    org:
+      en: "Yunnan Agricultural University"
+      zh: "云南农业大学"
+    note:
+      en: "Awarded in both 2022 and 2023"
+      zh: "2022、2023 两个年度"
+
 talks: []

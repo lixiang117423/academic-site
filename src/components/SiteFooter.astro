@@ -10,25 +10,37 @@ interface Props {
 const { locale } = Astro.props;
 const site = await getSiteProfile();
 
+// 邮箱仍为占位串时不渲染死链（与 Home / About 页同一判定）
+const hasEmail = site.email.trim() !== '' && !site.email.startsWith('TODO');
+
+const contactItems = [
+  ...(hasEmail
+    ? [{ href: `mailto:${site.email}`, label: site.email, rel: 'me noopener' }]
+    : []),
+  ...site.links.map((link) => ({
+    href: link.url,
+    label: link.label,
+    rel: 'me noopener',
+  })),
+  { href: site.blog.url, label: pick(locale, site.blog.label), rel: 'noopener' },
+];
+
 // 构建时刻的年份；可视稿 footer 的「© 年 姓名」同此写法
 const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer wrap">
   <p class="meta">
-    <a href={`mailto:${site.email}`}>{site.email}</a>
     {
-      site.links.map((link) => (
+      contactItems.map((item, index) => (
         <>
-          {' · '}
-          <a href={link.url} rel="me noopener">
-            {link.label}
+          {index > 0 && ' · '}
+          <a href={item.href} rel={item.rel}>
+            {item.label}
           </a>
         </>
       ))
     }
-    {' · '}
-    <a href={site.blog.url} rel="noopener">{pick(locale, site.blog.label)}</a>
   </p>
   <p class="meta">© {year} {pick(locale, site.name)}</p>
 </footer>

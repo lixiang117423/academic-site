@@ -1,6 +1,289 @@
 {
-  "generated_at": "2026-10-15T16:32:51+08:00",
+  "generated_at": "2026-10-16T15:38:44+08:00",
   "source": "content/publications.bib",
-  "count": 0,
-  "items": []
+  "count": 9,
+  "items": [
+    {
+      "id": "demita2026acuce",
+      "title": "Population genomics of the rice landrace Acuce reveals exceptional dynamics of immune receptors",
+      "authors": [
+        "De Mita, Stéphane",
+        "Duan, Shengchang",
+        "Li, Xiang",
+        "Pélissier, Rémi",
+        "Mathieu, Laura",
+        "Li, Jingyu",
+        "Ma, Linna",
+        "Li, Zihang",
+        "Liao, Jingjing",
+        "He, Xiahong",
+        "Zhu, Youyong",
+        "Li, Chengyun",
+        "Dong, Yang",
+        "Morel, Jean-Benoit",
+        "Huang, Huichuan"
+      ],
+      "year": 2026,
+      "venue": "Plant Diversity",
+      "type": "journal",
+      "doi": "10.1016/j.pld.2026.08.010",
+      "url": null,
+      "code": null,
+      "pdf": null,
+      "keywords": [
+        "landrace",
+        "population genomics",
+        "immune receptors",
+        "rice"
+      ],
+      "featured": true,
+      "authorRole": "co-first"
+    },
+    {
+      "id": "li2026rhizosphere",
+      "title": "Context-dependent reshaping of rhizosphere microbial communities by intercropping systems: A systematic analysis of 32 crop combinations",
+      "authors": [
+        "Li, Feixue",
+        "Ma, Linna",
+        "Li, Jingyu",
+        "Ye, Chen",
+        "Mei, Xinyue",
+        "Zhao, Siji",
+        "Li, Yiwen",
+        "Liu, Yixiang",
+        "Huang, Huichuan",
+        "Li, Xiang"
+      ],
+      "year": 2026,
+      "venue": "Rhizosphere",
+      "type": "journal",
+      "doi": "10.1016/j.rhisph.2026.101368",
+      "url": null,
+      "code": null,
+      "pdf": null,
+      "keywords": [
+        "intercropping",
+        "rhizosphere microbiome",
+        "meta-analysis",
+        "context-dependency"
+      ],
+      "featured": true,
+      "authorRole": "corresponding"
+    },
+    {
+      "id": "ma2026bhlh",
+      "title": "Network analysis reveals that bHLH transcription factors positively regulate rice resistance to Magnaporthe oryzae",
+      "authors": [
+        "Ma, Linna",
+        "Liu, Yemei",
+        "Li, Feixue",
+        "Bai, Yusha",
+        "Li, Yingguang",
+        "Chen, Xiaoqi",
+        "Huang, Huichuan",
+        "Li, Xiang"
+      ],
+      "year": 2026,
+      "venue": "BMC Plant Biology",
+      "type": "journal",
+      "doi": "10.1186/s12870-026-09237-8",
+      "url": null,
+      "code": null,
+      "pdf": null,
+      "keywords": [
+        "bHLH",
+        "rice blast",
+        "Magnaporthe oryzae",
+        "network analysis"
+      ],
+      "featured": true,
+      "authorRole": "corresponding"
+    },
+    {
+      "id": "ma2025blueberrysoybean",
+      "title": "Soil microbial community and chemical properties response to blueberry–soybean intercropping system",
+      "authors": [
+        "Ma, Linna",
+        "Li, Xiang",
+        "Zhang, Zhiping",
+        "Zhang, Ting",
+        "Duan, Haibin",
+        "Huang, Huichuan",
+        "Liu, Yixiang",
+        "Zhu, Shusheng",
+        "Zhu, Youyong",
+        "Li, Yingbin"
+      ],
+      "year": 2025,
+      "venue": "Plant and Soil",
+      "type": "journal",
+      "doi": "10.1007/s11104-024-06775-8",
+      "url": null,
+      "code": null,
+      "pdf": null,
+      "keywords": [
+        "intercropping",
+        "soil microbiome",
+        "nitrogen",
+        "soybean"
+      ],
+      "featured": false,
+      "authorRole": "co-first"
+    },
+    {
+      "id": "ma2025ricecore",
+      "title": "Compartment-specific core microbiomes and functions in rice",
+      "authors": [
+        "Ma, Linna",
+        "Bai, Yusha",
+        "Li, Xiang",
+        "Li, Jingyu",
+        "Li, Feixue",
+        "Yue, Yan",
+        "Li, Yingguang",
+        "Guo, Jingwen",
+        "Ye, Chen",
+        "Mei, Xinyue",
+        "Du, Fei",
+        "Liu, Yixiang",
+        "Yang, Min",
+        "Zhu, Shusheng",
+        "Huang, Huichuan"
+      ],
+      "year": 2025,
+      "venue": "Plant and Soil",
+      "type": "journal",
+      "doi": "10.1007/s11104-025-07558-5",
+      "url": null,
+      "code": null,
+      "pdf": null,
+      "keywords": [
+        "rice",
+        "core microbiome",
+        "compartment",
+        "PICRUSt2"
+      ],
+      "featured": false,
+      "authorRole": "co-first"
+    },
+    {
+      "id": "demita2024acuce",
+      "title": "Population genomics of the rice landrace Acuce reveals exceptional dynamics of immune receptors",
+      "authors": [
+        "De Mita, Stéphane",
+        "Duan, Shengchang",
+        "Li, Xiang",
+        "Pélissier, Rémi",
+        "Mathieu, Laura",
+        "Li, Jingyu",
+        "Ma, Linna",
+        "Li, Zihang",
+        "Liao, Jingjing",
+        "He, Xiahong",
+        "Zhu, Youyong",
+        "Li, Chengyun",
+        "Dong, Yang",
+        "Morel, Jean-Benoit",
+        "Huang, Huichuan"
+      ],
+      "year": 2024,
+      "venue": "bioRxiv",
+      "type": "preprint",
+      "doi": "10.1101/2024.02.15.579491",
+      "url": null,
+      "code": null,
+      "pdf": null,
+      "keywords": [
+        "landrace",
+        "population genomics",
+        "immune receptors",
+        "rice"
+      ],
+      "featured": false,
+      "authorRole": "co-first"
+    },
+    {
+      "id": "li2023plantnlratlas",
+      "title": "PlantNLRatlas: a comprehensive dataset of full- and partial-length NLR resistance genes across 100 chromosome-level plant genomes",
+      "authors": [
+        "Li, Xiang",
+        "Ma, Linna",
+        "Wang, Yingmin",
+        "Ye, Chen",
+        "Guo, Cunwu",
+        "Li, Yingbin",
+        "Mei, Xinyue",
+        "Du, Fei",
+        "Huang, Huichuan"
+      ],
+      "year": 2023,
+      "venue": "Frontiers in Plant Science",
+      "type": "journal",
+      "doi": "10.3389/fpls.2023.1178069",
+      "url": null,
+      "code": null,
+      "pdf": null,
+      "keywords": [
+        "NLR",
+        "NB-LRR",
+        "R gene",
+        "comparative genomics"
+      ],
+      "featured": true,
+      "authorRole": "first"
+    },
+    {
+      "id": "li2022ggmotif",
+      "title": "ggmotif: An R Package for the extraction and visualization of motifs from MEME software",
+      "authors": [
+        "Li, Xiang",
+        "Ma, Linna",
+        "Mei, Xinyue",
+        "Liu, Yixiang",
+        "Huang, Huichuan"
+      ],
+      "year": 2022,
+      "venue": "PLOS ONE",
+      "type": "journal",
+      "doi": "10.1371/journal.pone.0276979",
+      "url": null,
+      "code": "https://github.com/lixiang117423/ggmotif",
+      "pdf": null,
+      "keywords": [
+        "motif",
+        "MEME",
+        "R package",
+        "visualization"
+      ],
+      "featured": false,
+      "authorRole": "first"
+    },
+    {
+      "id": "li2022qpcrtools",
+      "title": "qPCRtools: An R package for qPCR data processing and visualization",
+      "authors": [
+        "Li, Xiang",
+        "Wang, Yingmin",
+        "Li, Jingyu",
+        "Mei, Xinyue",
+        "Liu, Yixiang",
+        "Huang, Huichuan"
+      ],
+      "year": 2022,
+      "venue": "Frontiers in Genetics",
+      "type": "journal",
+      "doi": "10.3389/fgene.2022.1002704",
+      "url": null,
+      "code": "https://github.com/lixiang117423/qPCRtools",
+      "pdf": null,
+      "keywords": [
+        "qPCR",
+        "R package",
+        "gene expression",
+        "visualization"
+      ],
+      "featured": true,
+      "authorRole": "first"
+    }
+  ]
 }

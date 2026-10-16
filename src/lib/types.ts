@@ -67,6 +67,7 @@ export interface SiteProfile {
   title: Localized;
   affiliation: Localized;
   intro: Localized;
+  bio: Localized;
   location: string;
   email: string;
   selfAuthors: string[];
