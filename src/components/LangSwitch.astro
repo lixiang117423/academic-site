@@ -1,5 +1,6 @@
 ---
 import { altPath } from '../lib/i18n';
+import { href } from '../lib/base';
 import type { Locale } from '../lib/types';
 
 interface Props {
@@ -8,7 +9,7 @@ interface Props {
 }
 
 const { locale, currentPath } = Astro.props;
-const target = altPath(currentPath);
+const target = href(altPath(currentPath));
 const targetLocale = locale === 'zh' ? 'en' : 'zh-CN';
 ---
 

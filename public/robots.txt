@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://example.invalid/sitemap-index.xml
+Sitemap: https://lixiang117423.github.io/academic-site/sitemap-index.xml

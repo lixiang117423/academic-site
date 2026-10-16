@@ -1,6 +1,7 @@
 ---
 import { getSiteProfile } from '../lib/data-source';
 import { pick } from '../lib/i18n';
+import { href, stripBase } from '../lib/base';
 import type { Locale } from '../lib/types';
 import LangSwitch from './LangSwitch.astro';
 
@@ -25,20 +26,22 @@ const items = [
 ];
 
 // 命中自身与子路径都算当前页；`trailingSlash: 'ignore'` 下 `/cv` 与 `/cv/` 都要认
-const isCurrent = (href: string) =>
-  currentPath === href || currentPath.startsWith(`${href}/`);
+// （先剥掉部署前缀，比较的是站内逻辑路径）
+const current = stripBase(currentPath);
+const isCurrent = (path: string) =>
+  current === path || current.startsWith(`${path}/`);
 ---
 
 <nav class="site-nav wrap" aria-label="Primary">
   {/* 站点身份兼首页入口：可视稿是静态稿，没有第二个页面可演示，故未画这一项 */}
-  <a class="site-name" href={homeHref}>{pick(locale, site.name)}</a>
+  <a class="site-name" href={href(homeHref)}>{pick(locale, site.name)}</a>
   <div class="nav-links">
     <ul>
       {
         items.map((item) => (
           <li>
             <a
-              href={item.href}
+              href={href(item.href)}
               aria-current={isCurrent(item.href) ? 'page' : undefined}
             >
               {pick(locale, item.label)}

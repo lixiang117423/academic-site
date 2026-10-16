@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { parse as parseYaml } from 'yaml';
 import {
   cvSchema,
@@ -10,7 +11,8 @@ import {
   softwareSchema,
 } from '../src/lib/schemas';
 
-const ROOT = '/Users/lixiang/NutstoreFiles/03.编程相关/my_academic_web';
+// 由本文件位置解析仓库根：本地与 GitHub Actions 上都能跑（不再钉死本机绝对路径）
+const ROOT = fileURLToPath(new URL('..', import.meta.url));
 
 function read(rel: string): string {
   return readFileSync(resolve(ROOT, rel), 'utf8');

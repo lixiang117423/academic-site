@@ -3,6 +3,7 @@ import SiteNav from '../components/SiteNav.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { getSiteProfile } from '../lib/data-source';
 import { pick } from '../lib/i18n';
+import { href, stripBase } from '../lib/base';
 import type { Locale } from '../lib/types';
 import '../styles/global.css';
 
@@ -16,8 +17,11 @@ const { locale, title, description } = Astro.props;
 const site = await getSiteProfile();
 const currentPath = Astro.url.pathname;
 
-// astro.config.mjs 的 site 目前是待定占位；此处只按其取值生成 canonical，不写死域名
-const canonical = Astro.site ? new URL(currentPath, Astro.site).href : undefined;
+// canonical 取 site（origin）+ 带部署前缀的完整路径；显式补 base，不依赖
+// Astro.url 在设了 base 时的具体取值行为
+const canonical = Astro.site
+  ? new URL(href(stripBase(currentPath)), Astro.site).href
+  : undefined;
 ---
 
 <!doctype html>
@@ -26,8 +30,8 @@ const canonical = Astro.site ? new URL(currentPath, Astro.site).href : undefined
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} · {pick(locale, site.name)}</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="icon" href={href('/favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={href('/favicon.png')} />
     {description && <meta name="description" content={description} />}
     {canonical && <link rel="canonical" href={canonical} />}
   </head>

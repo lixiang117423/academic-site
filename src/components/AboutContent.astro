@@ -2,6 +2,7 @@
 import { getSiteProfile } from '../lib/data-source';
 import { pick } from '../lib/i18n';
 import { emphasis } from '../lib/rich-text';
+import { href } from '../lib/base';
 import type { Locale } from '../lib/types';
 
 interface Props {
@@ -21,7 +22,13 @@ const avatarAlt = pick(locale, {
 ---
 
 <header class="about-head">
-  <img class="avatar" src="/avatar.jpg" width="132" height="132" alt={avatarAlt} />
+  <img
+    class="avatar"
+    src={href('/avatar.jpg')}
+    width="132"
+    height="132"
+    alt={avatarAlt}
+  />
   <div>
     <h1>{pick(locale, { en: 'About', zh: '关于' })}</h1>
     <p>

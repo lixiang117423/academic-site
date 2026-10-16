@@ -1,0 +1,2 @@
+# 阻止 GitHub Pages 用 Jekyll 处理产物：Jekyll 会忽略下划线开头的目录，
+# Astro 的 /_astro/ 正好属于这一类（走 Actions 产物部署通常不受影响，此为保险）。
