@@ -1,0 +1,85 @@
+---
+import { getSiteProfile, listPublications } from '../lib/data-source';
+import { pick } from '../lib/i18n';
+import type { Locale } from '../lib/types';
+import PublicationList from './PublicationList.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const site = await getSiteProfile();
+const featured = await listPublications({ featured: true, limit: 5 });
+
+// 个人信息尚未提供时，site.yaml 的字段是占位串；只在字段是真实值时渲染链接与联系方式
+const hasEmail = site.email !== '' && !site.email.startsWith('TODO');
+const hasLinks = site.links.length > 0;
+---
+
+<h1>{pick(locale, site.name)}</h1>
+<p class="lead">
+  {pick(locale, site.title)} · {pick(locale, site.affiliation)} · {site.location}
+</p>
+
+{
+  (hasEmail || hasLinks) && (
+    <p class="meta contact">
+      {hasEmail && <a href={`mailto:${site.email}`}>{site.email}</a>}
+      {site.links.map((link) => (
+        <>
+          {' · '}
+          <a href={link.url} rel="me noopener">
+            {link.label}
+          </a>
+        </>
+      ))}
+    </p>
+  )
+}
+
+<hr />
+
+<h2>Selected publications</h2>
+<PublicationList items={featured} locale={locale} compact />
+
+{
+  site.featuredPosts.length > 0 && (
+    <>
+      <h2>Recent notes</h2>
+      <ul class="notes">
+        {site.featuredPosts.map((post) => (
+          <li>
+            <a href={post.url} rel="noopener">
+              {post.title}
+            </a>
+            <span class="meta"> · {post.date}</span>
+          </li>
+        ))}
+      </ul>
+    </>
+  )
+}
+
+<style>
+  /*
+   * 区块顺序与间距照可视稿首页方案 A：姓名开场 → 导语 → 联系方式 → 分隔线 →
+   * 精选论文 → 最新笔记（`featuredPosts` 为空时整段不渲染，页面不留空标题）。
+   */
+  h1 {
+    margin-block: 2.75rem 0.35rem;
+  }
+
+  .contact {
+    margin-block: 0 0;
+  }
+
+  .notes {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+
+  .notes li {
+    margin-bottom: 0.25rem;
+  }
+</style>
