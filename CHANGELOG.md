@@ -2,6 +2,16 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-16 13:58 — 学术主页实现：Task 6 完成（Home 页，第三个检查点）
+
+- **Task 6 Home 页**（`7b7822b` + 修复 `77c98cf`）：新增 `src/components/PublicationList.astro`、`src/components/HomeContent.astro`，改写 `src/pages/index.astro` 并新增 `src/pages/zh/index.astro`。构建产出 `/` 与 `/zh/` 两个页面；测试 25/25；`tsc` 干净。
+- **评审抓出 3 条真实的设计保真缺口并全部修复**：① 首页缺 spec §9.4 与可视稿都要求的「一句话研究方向」——新增本地化 `intro` 字段（`content/site.yaml` / `schemas.ts` / `types.ts`）并以 `pick()` 渲染；② 缺「All publications →」链接——已按可视稿补上，指向 `/publications`；③ 作者行缺「自己姓名加粗」——**不做模糊匹配**（`Xiang Li` 与 BibTeX 的 `Li X` 不可靠），改为在 `site.yaml` 增加显式 `selfAuthors: []`（填 BibTeX `author` 字段里的原样拼写），`PublicationList` 对 trim + 大小写不敏感的全串匹配套 `.me`，空列表则不强调任何名字。连带修掉 3 条 Minor（分隔符悬挂、空 `<ul>` 与空态文案并存、DOI/PDF/Code 缺 `aria-label`）。
+- **设计规则新增**：`selfAuthors` 与 `intro` 已写入 spec §5.1；自姓名强调由显式清单驱动、不做模糊匹配的理由写入 §9.4。
+- **验收证据**：`pnpm build` 2 页、`pnpm test` 25/25、`pnpm exec tsc --noEmit --incremental false` exit 0；产物中确认存在 `<p class="intro">` 与 `All publications →`。
+- **待用户提供（阻塞真实内容）**：`site.yaml` 的 `name` / `title` / `affiliation` / `location` / `email` / `intro` 全部为 `TODO: 待用户提供`，`links` / `featuredPosts` / `selfAuthors` 为空；`content/publications.bib` 只有注释行。导入真实资料后需重跑 `scripts/sync_publications.py`。
+- **状态**：Task 7–12 未开工（Publications / Research / Software / CV+About / 404+sitemap / 验收核验）。恢复入口 `/Users/lixiang/NutstoreFiles/03.编程相关/my_academic_web/.superpowers/sdd/2026-10-15-academic-site-implementation/progress.md`（首行标注 plan 路径；`Task <N>: complete` 行即已完成集合）。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改。
+
 ## 2026-10-16 13:55 — Task 6 复审修复（研究方向句 / All publications / 本人姓名强调 + 3 条 Minor）
 
 - **Important 1（研究方向句缺失，控制端裁定真实）**：可视化方案 A 与 spec §9.4 的首页组成都是「名字开场 → 一句话研究方向 → 精选论文 → 最新笔记」。改动：`content/site.yaml` 新增本地化 `intro`（en/zh 均为 `TODO: 待用户提供`）、`src/lib/schemas.ts` 的 `siteProfileSchema` 加 `intro: localized`、`src/lib/types.ts` 的 `SiteProfile` 加 `intro: Localized`、`HomeContent.astro` 在 `.lead` 与联系方式之间以 `pick(locale, site.intro)` 渲染 `<p class="intro">`；spec §5.1 补 `intro` 字段行。
