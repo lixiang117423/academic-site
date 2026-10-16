@@ -355,3 +355,5 @@ dist/                       纯静态产物（HTML + CSS + 少量 JS + 静态资
 | 中英 CV PDF 原件 | CV 页下载链接 | 填充内容前 |
 | 正文字体最终选型 | 视觉定稿 | 视觉设计阶段 |
 | 首页「最新笔记」列表的维护方式（当前方案为 `site.yaml` 手工维护；自动同步语雀属后续增强，本阶段不做） | 首页内容更新频率 | 内容填充阶段 |
+
+> **2026-10-16 更新（决策落地）**：托管平台定为 **GitHub Pages 项目站点** <https://lixiang117423.github.io/academic-site/>，发布流水线为 `.github/workflows/deploy.yml`（push `main` → `pnpm test` → `pnpm build` → 发布 `dist/`）。因账号根域名已被既有 Hexo 博客占用，本站位于 `/academic-site/` 子路径，故 `astro.config.mjs` 设 `site` + `base`，站内绝对链接统一经 `src/lib/base.ts` 补前缀（实施方式见 `CHANGELOG.md` 2026-10-16 16:04 条）。**域名仍未定**；将来绑定自定义域使站点落在域名根路径时，只需删掉 `base` 一行，组件无需改动（GitHub Pages 为境外托管，无需 ICP 备案）。其余待定项（正文字体最终选型、最新笔记维护方式）状态不变。

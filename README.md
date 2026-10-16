@@ -20,7 +20,9 @@
 - `content/cv.yaml`：教育 3 条、工作 2 条、获奖 2 条；报告段（`talks`）为空，页面不渲染该标题。
 - `public/cv/cv-en.pdf` 与 `cv-zh.pdf`：由 `scripts/build_cv_pdf.py` 从上述数据生成（A4、中文字体已内嵌）；`public/avatar.jpg`、`public/favicon.svg`、`public/favicon.png` 已放。
 
-**待定**：域名与托管平台（spec §12）。域名确定后需同时替换 `astro.config.mjs` 的 `site` 与 `public/robots.txt` 的 Sitemap 行。
+**已上线（2026-10-16）**：<https://lixiang117423.github.io/academic-site/> · 仓库 <https://github.com/lixiang117423/academic-site>。托管为 GitHub Pages **项目站点**（账号根域名已被既有 Hexo 博客占用，故站内落在 `/academic-site/` 子路径），推送到 `main` 后由 `.github/workflows/deploy.yml` 自动跑测试、构建并发布 `dist/`。
+
+**待定**：域名（托管平台已定 GitHub Pages，境外托管不需要备案）。将来绑定自定义域、站点落到域名根路径时，把 `astro.config.mjs` 的 `site` 换成域名并删掉 `base` 一行即可——站内链接会随 `base` 自动跟随（见 `src/lib/base.ts`）。
 
 - 设计方案（唯一权威）：`docs/superpowers/specs/2026-10-15-academic-site-design.md`
 - 项目规则：`AGENTS.md`
@@ -42,6 +44,7 @@ docs/      设计方案与实现计划
 ```bash
 pnpm install
 pnpm dev        # 本地预览
+pnpm preview    # 预览 dist/ 构建产物（部署前的真实产物）
 pnpm build      # 产出 dist/
 pnpm test       # vitest（schema / i18n / 数据选择）
 ```

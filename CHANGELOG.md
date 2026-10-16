@@ -2,6 +2,18 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-16 16:04 — 部署上线：GitHub Pages 项目站点
+
+- **决策**：托管平台定为 **GitHub Pages 项目站点**（用户 2026-10-16 明确要境外托管、不想走备案）。账号根域名 `lixiang117423.github.io` 已被既有 Hexo 博客占用，所以本站只能落在子路径下。仓库 <https://github.com/lixiang117423/academic-site>（public）· 线上 <https://lixiang117423.github.io/academic-site/>。
+- **改造（base 前缀，本次主要工作量）**：新增 `src/lib/base.ts`（`href()` 补部署前缀 / `stripBase()` 还原站内逻辑路径；`import.meta.env.BASE_URL` 为 `/` 时两者退化为恒等映射，故本地与 vitest 行为不变）；`astro.config.mjs` 设 `site` + `base: '/academic-site'`；站内**所有**绝对链接改走 `href()`——`BaseLayout`（favicon / apple-touch-icon / canonical）、`SiteNav`（导航项与站点名，`aria-current` 比较前先剥前缀）、`LangSwitch`、`CvContent`（两份 CV PDF）、`HomeContent`（All publications）、`AboutContent`（头像）、`404`（回首页）；`src/lib/i18n.ts` 的 `localeFromPath()` / `altPath()` 也先剥前缀再判语言（否则 `/academic-site/zh/...` 认不出中文）。
+- **顺带修掉两个会 404 的死链**：语言切换原先把「同一页面的另一语言版」直接拼成 `/zh/publications/`、`/zh/404/`，而这两个页面并不存在（spec §4.1 规定 Publications 仅英文）——`altPath()` 现对「仅英文」路径返回中文站首页 `/zh/`，并补了单测与 `localeFromPath` 用例。
+- **CI/CD**：新增 `.github/workflows/deploy.yml`——`actions/checkout@v4` + `pnpm/action-setup@v4`（pnpm 11）+ `actions/setup-node@v4`（Node 22）+ `pnpm install --frozen-lockfile` → `pnpm test` → `pnpm build` → `actions/upload-pages-artifact@v3` → `actions/deploy-pages@v4`，`concurrency: pages`，push `main` 即发布。配套把 `tests/content-schema.test.ts` 的仓库根从钉死的本机绝对路径改成按文件位置解析（`fileURLToPath(new URL('..', import.meta.url))`），否则 Actions 上必然失败。新增 `public/.nojekyll`，防止 Jekyll 忽略 `_astro/`。
+- **建仓与发布**：`gh repo create lixiang117423/academic-site --public --source=. --remote=origin`；`gh api -X POST /repos/.../pages -f build_type=workflow` 启用 Actions 发布；本地 `main` 快进到 `feat/academic-site`（24 个提交，纯快进、无冲突）后 `git push -u origin main`。Actions run **38870963571**：build（含 `pnpm test`）与 deploy 两个 job **均 success**。
+- **线上验收（部署后 curl 实测，非推断）**：`/`、`/zh/`、`/about/`、`/research/`、`/software/`、`/cv/`、`/publications/` 全部 **200**；`/cv/cv-en.pdf`（138314 B）、`/cv/cv-zh.pdf`（339783 B）、`/avatar.jpg`（115110 B）、`/favicon.svg`、`/favicon.png`、`/robots.txt`、`/sitemap-index.xml`、`/404.html` 全部 200 且体积与本地产物一致；首页样式为**内联 `<style>`**、`<script>` 计数 **0**；首页里每个站内链接逐个探活（`/about`、`/cv` 等返回 301 是 GitHub Pages 的补斜杠跳转，正常）；canonical / robots / sitemap 均为 `https://lixiang117423.github.io/academic-site/...`。
+- **本地验证（提交前）**：`pnpm exec tsc --noEmit --incremental false` 干净；`pnpm test` → **40/40 PASS**（5 个文件；新增 `tests/base.test.ts` 3 例、`i18n.test.ts` 增 `altPath`/`localeFromPath` 6 例）；`pnpm build` → 12 页；产物中**已无**不带 `/academic-site/` 前缀的站内链接。
+- **已知提示（非失败，未处理）**：Actions 标注 `Node.js 20 is deprecated`（是官方 action 自身运行时的提示，工作流已用 Node 22）与 `ubuntu-latest 将于 2026-10-19 迁移到 Ubuntu 26`；两者都不影响本次发布，未擅自升级 action 大版本。
+- **收尾**：本轮为看效果起的本地预览服务（`pnpm preview`，端口 4321）已在验证完成后关闭。未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改；未删除任何文件。
+
 ## 2026-10-16 15:47 — 填入真实资料（占位内容全部替换）+ 三处遗留修复
 
 - **数据来源（全部取自本机既有材料，逐条可追溯；未臆造）**：身份与联系方式取自 `…/02.博后相关/99.other/13.2026年国自然/国自然用的简历-李详.pdf`（简历抬头：崖州湾国家实验室 作物抗病机制与技术团队）、`…/10.自贸港人才/3.海南自由贸易港全职高层次人才认定申请表-李详.docx`（邮箱 `lixiang01@yzwlab.cn`、地址）与 `…/07.海南经费申请/2025年度/李详/附件5.项目申请书.docx`（博士后课题：野生大豆泛基因组构建和抗病基因挖掘）；履历取自同一份国自然简历；获奖取自 `…/99.个人其他文件/01.毕业论文/2021110035李详.docx` 的「攻读学位期间…获奖情况」；论文清单取自 `…/96.已发文章/00_李详已发表文章的信息.docx`。

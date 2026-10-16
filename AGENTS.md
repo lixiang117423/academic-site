@@ -51,7 +51,8 @@
 
 ## 待确认事项
 
+- **托管平台**：**已定（2026-10-16 16:04）——GitHub Pages 项目站点**：<https://lixiang117423.github.io/academic-site/>，仓库 <https://github.com/lixiang117423/academic-site>；发布流水线为 `.github/workflows/deploy.yml`（push `main` → `pnpm test` → `pnpm build` → 发布 `dist/`）。账号根域名 `lixiang117423.github.io` 已被 Hexo 博客占用，所以本站只能落在 `/academic-site/` 子路径下：`astro.config.mjs` 的 `base` **必须保留**，站内任何绝对链接都要走 `src/lib/base.ts` 的 `href()`（新页面别直接写 `/xxx`）。
 - **域名**：待定（用户 2026-10-15 明确「后面再说」）。既有站点配置中登记的域名为 `www.web4xiang.com`，其当前归属与注册商需用户确认。
-- **托管平台**：待定（候选：Cloudflare Pages / GitHub Pages）。本阶段只保证 `pnpm build` 产出可托管于任意静态空间的 `dist/`。
-- **站点展示信息**：姓名写法、机构、职位、邮箱、ORCID iD、Google Scholar / ResearchGate 链接待用户提供；在此之前使用占位内容，**不得臆造**。
+  将来若绑定自定义域（站点落在域名根路径），把 `astro.config.mjs` 的 `site` 换成域名、删掉 `base` 一行即可，组件无需改动；GitHub Pages 属境外托管，**不需要 ICP 备案**。
+- **站点展示信息**：**已填（2026-10-16）**，取值与来源逐条登记在 `CHANGELOG.md` 同时间条目。ORCID 未检索到公开记录（用户称有 Google Scholar，按本机 Arc 浏览历史定位并写入 `content/site.yaml`）。
 - **坚果云排除项**：`node_modules/`、`dist/`、`.astro/` 的具体排除入口以客户端为准。
