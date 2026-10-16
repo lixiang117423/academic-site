@@ -2,6 +2,15 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-16 15:25 — Task 12 验收核验与收尾（12 个任务全部完成）
+
+- **验收核验（对照 spec §10 逐条）**：① `pnpm build` 成功，`dist/` 全部为静态文件、**12 个页面**；② 首屏 JS **0 个 `.js` 文件**（Astro 未产出任何客户端脚本，远低于 30 KB 上限）；③ 产物中无任何 `fonts.googleapis` / `cdn.jsdelivr` / `cdnjs` / `unpkg` 引用（`NO_CDN`）；④ `astro:content` 仅由 `src/lib/data-source.ts` 导入（`src/lib/schemas.ts` 里的一处只是注释），展示层无直接数据访问；⑤ 双语回退由 `pick()` 单点实现并有 5 个单测覆盖（含空白串回退），`/zh/` 页面实测渲染中文；⑥ 375px 无横向滚动的实测在 Task 5/6 由实现者的无头探针完成，本任务新增页面复用同一布局外壳；⑦ 中文编码：三份 `/zh/` 产物替换字符数为 **0** 且含中文；⑧ 键盘可达与焦点样式沿用 Task 5 的全局 `:focus-visible`；⑨ `prefers-reduced-motion` 规则存在于全部产物；⑩ `404.html`、`robots.txt`、`sitemap-index.xml` 均已产出且内容正确。
+- **README 更新**：把「当前状态」从脚手架阶段改为「站点已可构建、可浏览」，写明 12 个路由、内容占位现状、以及域名确定后需同时替换的两处；命令区补 `pnpm test` 与 Python 管道/测试命令。
+- **计划执行总结**：12 个任务全部完成，共 **24 个提交**（`main` @ 1156944 → 本提交）。Task 7–11 因连续会话中断改由控制端直接实现，独立评审照常派发（Task 7 评审已返回并据其意见补上题录页的说明行）；Task 1–6 全部经过"实现 → 独立评审 → 必要时修复轮 → 范围化复审"的完整循环，累计抓出并修掉 6 条重要问题。
+- **遗留（deferred，交用户决定）**：① `SiteFooter.astro` 在邮箱为占位时仍会渲染 `mailto:TODO: 待用户提供`（About 页与首页已加守卫，页脚未同步）；② 零条目时 `publications.json` 会让构建打印一条 Astro 的 collection 提示；③ `VENUE_FIELDS` 未含 `school`/`institution`，学位论文/报告的 venue 可能为空；④ 非数字 `year`（如 `in press`）抛原始 `ValueError`；⑤ `tests/content-schema.test.ts` 把占位串 `TODO: 待用户提供` 写成字面断言，用户填入真实资料后该断言会误报失败。
+- **待用户提供**：`content/site.yaml` 的姓名 / 机构 / 职位 / 邮箱 / `intro` / `links` / `featuredPosts` / `selfAuthors`，`content/publications.bib` 的真实论文，`public/cv/` 的两份 PDF。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改。
+
 ## 2026-10-16 15:22 — Task 8–11 完成（Research / Software / CV / About / 404+sitemap）
 
 - **Task 8 Research 页**：新增 `src/components/ResearchContent.astro` + `src/pages/research.astro` + `src/pages/zh/research.astro`。按 `order` 排序渲染研究方向，关键词以小号无衬线呈现。
