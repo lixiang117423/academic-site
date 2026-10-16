@@ -2,6 +2,16 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-16 15:17 — Task 7 Publications 页完成
+
+- 新增 `src/pages/publications.astro`（仅英文，符合 spec §4.1：论文题录本来就是英文）。复用 Task 6 已建的 `PublicationList.astro`，未重复实现论文条目 markup。
+- 分组覆盖 `Publication['type']` 的**全部八个取值**（journal / conference / preprint / book / book-chapter / thesis / report / other），空分组不渲染标题——避免出现"有标题没内容"的空档。
+- 零条目时只渲染一条说明（指向 `content/publications.bib` 与 `scripts/sync_publications.py`），不渲染空列表容器。
+- 本页落地后，Task 6 首页的「All publications →」链接（指向 `/publications`）不再是死链。
+- 验收：`pnpm build` 3 页（`/`、`/zh/`、`/publications`）· `pnpm test` 25/25 · `pnpm exec tsc --noEmit --incremental false` 干净 · `dist/zh/publications` 不存在（确认未生成中文版）。
+- 执行方式说明：本轮由控制端直接实现（前序 Task 7 子代理因会话中断被清理）。按 `subagent-driven-development` 的流程，本任务仍应经独立评审——评审安排在下一步单独派发，不因此改变验收标准。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改。
+
 ## 2026-10-16 13:58 — 学术主页实现：Task 6 完成（Home 页，第三个检查点）
 
 - **Task 6 Home 页**（`7b7822b` + 修复 `77c98cf`）：新增 `src/components/PublicationList.astro`、`src/components/HomeContent.astro`，改写 `src/pages/index.astro` 并新增 `src/pages/zh/index.astro`。构建产出 `/` 与 `/zh/` 两个页面；测试 25/25；`tsc` 干净。

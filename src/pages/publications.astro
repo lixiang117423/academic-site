@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PublicationList from '../components/PublicationList.astro';
+import { listPublications } from '../lib/data-source';
+import type { Publication } from '../lib/types';
+
+const all = await listPublications();
+
+// 覆盖 type 枚举的全部取值：任何一类都不能被静默丢弃。
+// 版式与分组顺序参照 docs/design-mockups/01_页面设计_初稿.html 的 id="pubs" 一节。
+const sections: { key: Publication['type']; heading: string }[] = [
+  { key: 'journal', heading: 'Journal articles' },
+  { key: 'conference', heading: 'Conference papers' },
+  { key: 'preprint', heading: 'Preprints' },
+  { key: 'book', heading: 'Books' },
+  { key: 'book-chapter', heading: 'Book chapters' },
+  { key: 'thesis', heading: 'Theses' },
+  { key: 'report', heading: 'Reports' },
+  { key: 'other', heading: 'Other outputs' },
+];
+
+const grouped = sections
+  .map((section) => ({
+    ...section,
+    items: all.filter((item) => item.type === section.key),
+  }))
+  .filter((section) => section.items.length > 0);
+---
+
+<BaseLayout locale="en" title="Publications">
+  <h1>Publications</h1>
+
+  {grouped.length === 0 && (
+    <p class="meta">
+      No publications yet. Add entries to <code>content/publications.bib</code>
+      and run <code>scripts/sync_publications.py</code>.
+    </p>
+  )}
+
+  {grouped.map((section) => (
+    <>
+      <h2>{section.heading}</h2>
+      <PublicationList items={section.items} locale="en" />
+    </>
+  ))}
+</BaseLayout>
+
+<style>
+  h1 {
+    font-size: var(--step3);
+    margin-block: 3rem 1rem;
+  }
+
+  h2 {
+    font-size: var(--step2);
+    margin-block: 2.5rem 0.5rem;
+  }
+</style>
