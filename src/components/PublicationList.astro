@@ -4,10 +4,11 @@ import type { Locale, Publication } from '../lib/types';
 interface Props {
   items: Publication[];
   locale: Locale;
+  selfAuthors?: string[];
   compact?: boolean;
 }
 
-const { items, compact = false } = Astro.props;
+const { items, selfAuthors = [], compact = false } = Astro.props;
 
 const roleLabel: Record<Publication['authorRole'], string> = {
   first: 'first author',
@@ -15,60 +16,85 @@ const roleLabel: Record<Publication['authorRole'], string> = {
   corresponding: 'corresponding',
   'co-author': '',
 };
+
+// 本人姓名强调由 site.yaml 的 selfAuthors 显式登记驱动，不做模糊匹配：
+// 只有去除首尾空白后与登记项大小写无关地完全一致才加粗，避免把同名他人误判为本人。
+const selfAuthorKeys = new Set(
+  selfAuthors.map((author) => author.trim().toLowerCase())
+);
 ---
 
-{items.length === 0 && <p class="meta">No publications yet.</p>}
-
-<ul class="pubs" class:list={[{ compact }]}>
-  {
-    items.map((item) => (
-      <li>
-        <div class="year">{item.year}</div>
-        <div>
-          <p class="pub-title">{item.title}</p>
-          <p class="pub-authors">
-            {item.authors.join(', ')}
-            {roleLabel[item.authorRole] && (
-              <span class="role">{roleLabel[item.authorRole]}</span>
-            )}
-          </p>
-          <p class="pub-venue">
-            <em>{item.venue}</em>, {item.year}
-            {(item.doi || item.pdf || item.code) && (
-              <span class="links">
-                {item.doi && (
-                  <>
-                    {' · '}
-                    <a href={`https://doi.org/${item.doi}`}>DOI</a>
-                  </>
-                )}
-                {item.pdf && (
-                  <>
-                    {' · '}
-                    <a href={item.pdf}>PDF</a>
-                  </>
-                )}
-                {item.code && (
-                  <>
-                    {' · '}
-                    <a href={item.code}>Code</a>
-                  </>
-                )}
-              </span>
-            )}
-          </p>
-        </div>
-      </li>
-    ))
-  }
-</ul>
+{
+  items.length === 0 ? (
+    <p class="meta">No publications yet.</p>
+  ) : (
+    <ul class="pubs" class:list={[{ compact }]}>
+      {items.map((item) => (
+        <li>
+          <div class="year">{item.year}</div>
+          <div>
+            <p class="pub-title">{item.title}</p>
+            <p class="pub-authors">
+              {item.authors.map((author, index) => (
+                <>
+                  {index > 0 && ', '}
+                  {selfAuthorKeys.has(author.trim().toLowerCase()) ? (
+                    <span class="me">{author}</span>
+                  ) : (
+                    author
+                  )}
+                </>
+              ))}
+              {roleLabel[item.authorRole] && (
+                <span class="role">{roleLabel[item.authorRole]}</span>
+              )}
+            </p>
+            <p class="pub-venue">
+              <em>{item.venue}</em>, {item.year}
+              {(item.doi || item.pdf || item.code) && (
+                <span class="links">
+                  {item.doi && (
+                    <>
+                      {' · '}
+                      <a
+                        href={`https://doi.org/${item.doi}`}
+                        aria-label={`DOI for ${item.title}`}
+                      >
+                        DOI
+                      </a>
+                    </>
+                  )}
+                  {item.pdf && (
+                    <>
+                      {' · '}
+                      <a href={item.pdf} aria-label={`PDF for ${item.title}`}>
+                        PDF
+                      </a>
+                    </>
+                  )}
+                  {item.code && (
+                    <>
+                      {' · '}
+                      <a href={item.code} aria-label={`Code for ${item.title}`}>
+                        Code
+                      </a>
+                    </>
+                  )}
+                </span>
+              )}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 <style>
   /*
    * 条目版式取自可视稿 docs/design-mockups/01_页面设计_初稿.html 的首页方案 A `.pubs`：
    * 年份挂在左侧等宽栏，右侧标题 / 作者 / 出处三行；分隔线只画条与条之间。
-   * 可视稿把本人姓名 `.me` 加粗，但 PublicationList 只拿到作者字符串、没有「本人」标识，
-   * 取数层也不提供该字段，故不加粗某一位作者——等真实 BibTeX 导入后再评估。
+   * 本人姓名按 site.yaml 的 selfAuthors 显式登记加粗（`.me`），不做模糊匹配。
    */
   .pubs {
     list-style: none;
@@ -109,6 +135,10 @@ const roleLabel: Record<Publication['authorRole'], string> = {
     margin: 0.1rem 0 0;
     font-family: var(--font-sans);
     font-size: var(--step-1);
+  }
+
+  .pub-authors .me {
+    font-weight: 600;
   }
 
   .pub-venue {

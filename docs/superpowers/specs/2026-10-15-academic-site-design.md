@@ -89,8 +89,10 @@
 | `name` | object | `{ en, zh }`，展示用姓名 |
 | `title` | object | `{ en, zh }`，职位/头衔 |
 | `affiliation` | object | `{ en, zh }`，所属机构 |
+| `intro` | object | `{ en, zh }`，首页「一句话研究方向」，渲染在姓名导语与联系方式之间 |
 | `location` | string | 城市/国家 |
 | `email` | string | 公开邮箱 |
+| `selfAuthors` | array | 本人作者名列表：逐字照抄 BibTeX `author` 字段里的写法（如 `Li X`），一种拼写一行；空数组表示论文作者行不做任何加粗强调 |
 | `links` | array | `{ label, url, icon }`，如 GitHub、ORCID、Google Scholar、ResearchGate |
 | `blog` | object | `{ label, url }`，指向既有博客的外链 |
 | `featuredPosts` | array | `{ title, url, date }`，首页展示的最新笔记外链；**手工维护**（见 12 节待定项） |
@@ -311,6 +313,7 @@ dist/                       纯静态产物（HTML + CSS + 少量 JS + 静态资
 - **可视稿（实现阶段的视觉参照）**：`docs/design-mockups/01_页面设计_初稿.html` —— 单文件自包含，含首页两方案与 Publications / Research / Software / CV 四个内容页。
 - **首页采用可视稿的方案 A**（名字开场 → 一句话研究方向 → 精选论文 → 最新笔记）。理由：首页的职责是让人在 30 秒内知道"你是谁、做什么、发过什么"，把研究方向铺满首屏会削弱 §9.1 第 3 条"Publications 是主角"。
 - **方案 B 的编号索引式研究方向改用于 `/research` 页首**：Research 页本来就是承载研究内容的地方，索引式排版在那里密度合适。
+- **本人作者名强调由 `site.yaml` 的 `selfAuthors` 显式列表驱动**，不做模糊匹配：`Xiang Li` 与 BibTeX 里的 `Li X` 之间无法可靠自动对应，按姓名相似度猜测会误标同名他人，因此要求用户逐条登记其在论文中实际使用的作者名写法。
 - Publications / Research / Software / CV 按可视稿对应的单版式实现。
 - §9.2 的令牌与 §9.3 的字体策略以可视稿中的实际取值为准（可视稿用的系统字体栈是"离线可用"的兜底方案，实现阶段若自托管字体更像样再替换，但必须保证中文字形覆盖）。
 - 可视稿顶部的说明条与全部"示例占位"文本**不进正式站点**。

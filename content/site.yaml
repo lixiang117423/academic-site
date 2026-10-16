@@ -7,8 +7,14 @@ title:
 affiliation:
   en: "TODO: 待用户提供"
   zh: "TODO: 待用户提供"
+intro:
+  en: "TODO: 待用户提供"
+  zh: "TODO: 待用户提供"
 location: "TODO: 待用户提供"
 email: "TODO: 待用户提供"
+# 本人作者名：逐字照抄 BibTeX author 字段里的写法（如 "Li X"），
+# 一种拼写一行；留空数组表示论文作者行不做任何加粗强调。
+selfAuthors: []
 links: []
 blog:
   label:

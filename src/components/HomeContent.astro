@@ -22,15 +22,21 @@ const hasLinks = site.links.length > 0;
   {pick(locale, site.title)} · {pick(locale, site.affiliation)} · {site.location}
 </p>
 
+<p class="intro">{pick(locale, site.intro)}</p>
+
 {
   (hasEmail || hasLinks) && (
     <p class="meta contact">
-      {hasEmail && <a href={`mailto:${site.email}`}>{site.email}</a>}
-      {site.links.map((link) => (
+      {[
+        ...(hasEmail
+          ? [{ href: `mailto:${site.email}`, label: site.email }]
+          : []),
+        ...site.links.map((link) => ({ href: link.url, label: link.label })),
+      ].map((item, index) => (
         <>
-          {' · '}
-          <a href={link.url} rel="me noopener">
-            {link.label}
+          {index > 0 && ' · '}
+          <a href={item.href} rel="me noopener">
+            {item.label}
           </a>
         </>
       ))}
@@ -41,7 +47,14 @@ const hasLinks = site.links.length > 0;
 <hr />
 
 <h2>Selected publications</h2>
-<PublicationList items={featured} locale={locale} compact />
+<PublicationList
+  items={featured}
+  locale={locale}
+  selfAuthors={site.selfAuthors}
+  compact
+/>
+
+<p class="meta"><a href="/publications">All publications →</a></p>
 
 {
   site.featuredPosts.length > 0 && (
@@ -63,11 +76,17 @@ const hasLinks = site.links.length > 0;
 
 <style>
   /*
-   * 区块顺序与间距照可视稿首页方案 A：姓名开场 → 导语 → 联系方式 → 分隔线 →
-   * 精选论文 → 最新笔记（`featuredPosts` 为空时整段不渲染，页面不留空标题）。
+   * 区块顺序与间距照可视稿首页方案 A：姓名开场 → 导语 → 一句话研究方向 →
+   * 联系方式 → 分隔线 → 精选论文 → 「All publications →」→ 最新笔记
+   * （`featuredPosts` 为空时整段不渲染，页面不留空标题）。
    */
   h1 {
     margin-block: 2.75rem 0.35rem;
+  }
+
+  /* 导语与研究方向句之间承接可视稿 `p { margin: 0 0 0.85rem }` 的节奏 */
+  .intro {
+    margin-bottom: 0.85rem;
   }
 
   .contact {

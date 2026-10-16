@@ -2,6 +2,20 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-16 13:55 — Task 6 复审修复（研究方向句 / All publications / 本人姓名强调 + 3 条 Minor）
+
+- **Important 1（研究方向句缺失，控制端裁定真实）**：可视化方案 A 与 spec §9.4 的首页组成都是「名字开场 → 一句话研究方向 → 精选论文 → 最新笔记」。改动：`content/site.yaml` 新增本地化 `intro`（en/zh 均为 `TODO: 待用户提供`）、`src/lib/schemas.ts` 的 `siteProfileSchema` 加 `intro: localized`、`src/lib/types.ts` 的 `SiteProfile` 加 `intro: Localized`、`HomeContent.astro` 在 `.lead` 与联系方式之间以 `pick(locale, site.intro)` 渲染 `<p class="intro">`；spec §5.1 补 `intro` 字段行。
+- **Important 2（缺「All publications →」链接，控制端裁定真实）**：可视化方案 A 在论文列表后即输出该链接，`/publications` 是 spec §4.1 定义、Task 7 将实现的正式路由。改动：`HomeContent.astro` 在论文块后加 `<p class="meta"><a href="/publications">All publications →</a></p>`（按 spec §4.1 Publications 仅英文，无中文变体）。
+- **Important 3（本人姓名未强调，控制端裁定真实）**：新增显式自助标识而非猜测——`content/site.yaml` 加 `selfAuthors: []` 并附注释（逐字照抄 BibTeX `author` 字段写法，一种拼写一行；空数组表示不强调）；`siteProfileSchema` 加 `selfAuthors: z.array(z.string()).default([])`；`SiteProfile` 加 `selfAuthors: string[]`；`PublicationList.astro` 加 `selfAuthors?: string[]` 入参，作者行按「trim + 大小写无关的完全匹配」输出 `.me`（`font-weight: 600`，与可视稿一致），不做模糊匹配（`Xiang Li` ↔ `Li X` 无法可靠对应）；spec §5.1 登记 `selfAuthors`，§9.4 补一条说明该强调由显式列表驱动、不按姓名相似度猜测。
+- **Minor 1（分隔符前置 bug，控制端裁定真实）**：联系方式行原先把 `' · '` 写在 `site.links` 每一项之前，邮箱被抑制而链接存在时会以悬空分隔符开头。改为先把「邮箱（真值时才加入）+ 链接」合成同一个条目数组，仅在 `index > 0` 时输出分隔符。
+- **Minor 2（空列表容器，控制端裁定真实）**：`PublicationList.astro` 原先在 0 条时同时输出 `No publications yet.` 与空 `<ul class="pubs">`；改为三元分支，`items.length === 0` 时只输出提示、不渲染列表。
+- **Minor 3（链接可访问性，控制端裁定真实）**：DOI / PDF / Code 三个裸链接各自加 `aria-label`，含论文题名（`DOI for <title>` 等），屏幕阅读器链接列表可区分。
+- **未改动（控制端裁定非缺陷）**：`PublicationList` 的 `locale` 入参保持不参与运行期分支——brief 冻结了该接口、spec §4.1 规定 Publications 仅英文。`SiteFooter.astro` 的 `mailto:` 占位渲染与 0 条 `publications.json` 构建告警均为已登记的 deferred 项，本轮未触碰。
+- **覆盖检查（提交前实跑）**：`pnpm exec tsc --noEmit --incremental false` → 退出码 0；`pnpm test` → **25/25 PASS**；`pnpm build` → **Complete!**、2 pages built（`dist/index.html`、`dist/zh/index.html`）；`PAGES_OK`；`grep -c "TODO" dist/zh/index.html` → 1；两语言产物均含 `<p class="intro">` 与 `/publications` 的「All publications →」链接；`grep -rn "content/" src/pages src/components` → `NO_DIRECT_ACCESS`；CDN 检索 → `NO_CDN`。
+- **组件级探针（临时探针在 `.superpowers/.../tmp-probe/`，属 gitignore 的忽略目录、非交付物）**：用真实 `PublicationList` 与样例数据实测——`selfAuthors: ['li x', 'WANG Q']` 时 `Li X` 与 `Wang Q` 输出 `<span class="me">`、`zhang s` 不加粗；0 条时只输出 `No publications yet.`，无 `ul.pubs`；三个链接分别带 `aria-label="DOI/PDF/Code for Sample publication title"`。联系方式分隔符用同一条表达式对四种组合实测——links-only 与 email-only 均无前导分隔符、both 的两个分隔符只在条目之间、neither 整段不渲染。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改；未删除任何文件；未写项目根以外路径。
+- 提交：本条目对应复审修复提交（见本文件后续「Task 6 复审修复」提交行）。
+
 ## 2026-10-16 13:44 — Task 6 Home 页（方案 A：姓名开场 + 精选论文）
 
 - 按 `task-6-brief.md` 建首页：`src/components/PublicationList.astro`（论文列表组件，Task 7 复用）、`src/components/HomeContent.astro`（首页内容组件，接收 `locale`）、`src/pages/index.astro`（英文首页，替换 Task 5 的最小占位页）、`src/pages/zh/index.astro`（中文首页）。展示层只调用 `getSiteProfile()` 与 `listPublications({ featured: true, limit: 5 })` 两个冻结访问器，双语字段一律经 `pick()`。

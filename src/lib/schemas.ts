@@ -58,8 +58,10 @@ export const siteProfileSchema = z.object({
   name: localized,
   title: localized,
   affiliation: localized,
+  intro: localized,
   location: z.string(),
   email: z.string(),
+  selfAuthors: z.array(z.string()).default([]),
   links: z.array(
     z.object({
       label: z.string(),
