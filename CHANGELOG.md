@@ -14,7 +14,7 @@
 - **覆盖检查（提交前实跑）**：`pnpm exec tsc --noEmit --incremental false` → 退出码 0；`pnpm test` → **25/25 PASS**；`pnpm build` → **Complete!**、2 pages built（`dist/index.html`、`dist/zh/index.html`）；`PAGES_OK`；`grep -c "TODO" dist/zh/index.html` → 1；两语言产物均含 `<p class="intro">` 与 `/publications` 的「All publications →」链接；`grep -rn "content/" src/pages src/components` → `NO_DIRECT_ACCESS`；CDN 检索 → `NO_CDN`。
 - **组件级探针（临时探针在 `.superpowers/.../tmp-probe/`，属 gitignore 的忽略目录、非交付物）**：用真实 `PublicationList` 与样例数据实测——`selfAuthors: ['li x', 'WANG Q']` 时 `Li X` 与 `Wang Q` 输出 `<span class="me">`、`zhang s` 不加粗；0 条时只输出 `No publications yet.`，无 `ul.pubs`；三个链接分别带 `aria-label="DOI/PDF/Code for Sample publication title"`。联系方式分隔符用同一条表达式对四种组合实测——links-only 与 email-only 均无前导分隔符、both 的两个分隔符只在条目之间、neither 整段不渲染。
 - 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改；未删除任何文件；未写项目根以外路径。
-- 提交：本条目对应复审修复提交（见本文件后续「Task 6 复审修复」提交行）。
+- 提交：`fix(home): 补研究方向句与本人姓名强调`（`77c98cf`）。
 
 ## 2026-10-16 13:44 — Task 6 Home 页（方案 A：姓名开场 + 精选论文）
 
