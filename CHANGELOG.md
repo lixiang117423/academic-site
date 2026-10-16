@@ -2,6 +2,17 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-16 13:44 — Task 6 Home 页（方案 A：姓名开场 + 精选论文）
+
+- 按 `task-6-brief.md` 建首页：`src/components/PublicationList.astro`（论文列表组件，Task 7 复用）、`src/components/HomeContent.astro`（首页内容组件，接收 `locale`）、`src/pages/index.astro`（英文首页，替换 Task 5 的最小占位页）、`src/pages/zh/index.astro`（中文首页）。展示层只调用 `getSiteProfile()` 与 `listPublications({ featured: true, limit: 5 })` 两个冻结访问器，双语字段一律经 `pick()`。
+- **版式取可视稿方案 A（brief 与可视稿冲突处按可视稿）**：`docs/design-mockups/01_页面设计_初稿.html` 的 `id="home-a"` 用左侧年份栏 + 标题 / 作者 / 出处的论文条目（`.pubs` grid `3.25rem 1fr`）、带边框的 `authorRole` 徽章、姓名下方的联系方式行；brief 片段里的简单列表与 `--step3` h1 覆盖值未采用。方案 B 的编号索引版式未出现在本页（保留给 `/research`）。
+- **空数据兜底**：`content/site.yaml` 的姓名/职位/机构/邮箱仍为 `TODO: 待用户提供`、`links: []`、`featuredPosts: []`，`content/publications.json` 为 0 条。首页因此只渲染姓名、导语、分隔线、「Selected publications」标题与「No publications yet.」；联系方式行与「Recent notes」区块**整段不渲染**（不生成 `mailto:TODO` 死链、不留空标题），构建与两个语言页均正常产出。
+- **验收（提交前实跑）**：`pnpm build` → **Complete!**、2 pages built（`dist/index.html`、`dist/zh/index.html`）；`pnpm test` → **25/25 PASS**（3 个文件，与 Task 5 持平）；`pnpm exec tsc --noEmit --incremental false` → 退出码 0、无输出；`PAGES_OK`（两页产物存在）；`grep -c "TODO" dist/zh/index.html` → 1（大于 0，中文分支生效）；`grep -rn "content/" src/pages src/components` → **NO_DIRECT_ACCESS**；新文件内 **NO_REMOTE_ASSET**（无远程字体 / 样式 / 脚本 / 图片）。
+- **构建产物核查**：两页仅引用本地 `/_astro/*.css`，`<script>` / `<img>` / 远程字体与样式 0 个；外链只有页脚/导航的既有博客外链与 canonical 占位 `https://example.invalid/`（域名待定，来自 `astro.config.mjs`），无新增外部资源引用。
+- **已知现象（非本任务缺陷）**：构建仍打印 `[WARN] [file-loader] No items found in ./content/publications.json` 与两行 collection empty 提示（0 条论文所致，Task 4 已登记，导入真实 `.bib` 后消失）；`SiteFooter.astro` 生成的 `mailto:TODO: 待用户提供` 占位链接是 Task 5 既有行为，不在本任务文件范围，未改动。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改；未删除任何文件；未写项目根以外路径。
+- 提交：`feat(home): 首页与精选论文列表`（`7b7822b`）。
+
 ## 2026-10-15 17:18 — 学术主页实现：Task 4–5 完成（第二个检查点）
 
 - **Task 4 适配层与语言回退**（`c1ec16a` + 修复 `f186a28`）：新增 `src/lib/i18n.ts`（`pick()` 唯一回退入口、`altPath()`）、`src/lib/data-select.ts`（纯函数，不依赖 `astro:content`，故可单测）、`src/lib/data-source.ts`（**全站唯一数据入口**，导出 `getSiteProfile` / `listPublications` / `listResearch` / `listSoftware` / `getCV` 五个冻结访问器）。修复轮解决 1 条重要问题：`listResearch()` 漏映射 `image`，导致 schema 支持的字段经唯一入口永远取不到。测试 25/25。
