@@ -1,0 +1,60 @@
+---
+import { listSoftware } from '../lib/data-source';
+import { pick } from '../lib/i18n';
+import type { Locale } from '../lib/types';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const items = await listSoftware();
+---
+
+<h1>{pick(locale, { en: 'Software', zh: '软件' })}</h1>
+
+{items.length === 0 && (
+  <p class="meta">
+    {pick(locale, { en: 'No software entries yet.', zh: '软件条目待补充。' })}
+  </p>
+)}
+
+{items.map((item) => (
+  <article>
+    <h2>
+      {item.name}
+      <span class="meta"> · {item.language}</span>
+    </h2>
+    <p>{pick(locale, item.tagline)}</p>
+    {item.install && <pre><code>{item.install}</code></pre>}
+    <p class="meta">
+      <a href={item.repo} rel="noopener">Repository</a>
+      {item.docs && <> · <a href={item.docs} rel="noopener">Docs</a></>}
+    </p>
+  </article>
+))}
+
+<style>
+  h1 {
+    font-size: var(--step3);
+    margin-block: 3rem 1rem;
+  }
+
+  h2 {
+    font-size: var(--step2);
+    margin-block: 2.5rem 0.5rem;
+  }
+
+  article {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  article:last-of-type {
+    border-bottom: 0;
+  }
+
+  article p {
+    margin-block: 0 0.5rem;
+  }
+</style>

@@ -1,0 +1,47 @@
+---
+import { listResearch } from '../lib/data-source';
+import { pick } from '../lib/i18n';
+import type { Locale } from '../lib/types';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const items = await listResearch();
+---
+
+<h1>{pick(locale, { en: 'Research', zh: '研究方向' })}</h1>
+
+{items.length === 0 && (
+  <p class="meta">
+    {pick(locale, {
+      en: 'No research directions yet.',
+      zh: '研究方向待补充。',
+    })}
+  </p>
+)}
+
+{items.map((item) => (
+  <section>
+    <h2>{pick(locale, item.title)}</h2>
+    <p>{pick(locale, item.summary)}</p>
+    {item.keywords.length > 0 && <p class="meta">{item.keywords.join(' · ')}</p>}
+  </section>
+))}
+
+<style>
+  h1 {
+    font-size: var(--step3);
+    margin-block: 3rem 1rem;
+  }
+
+  h2 {
+    font-size: var(--step2);
+    margin-block: 2.5rem 0.5rem;
+  }
+
+  section p {
+    margin-block: 0 0.5rem;
+  }
+</style>

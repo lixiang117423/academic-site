@@ -2,6 +2,18 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-16 15:22 — Task 8–11 完成（Research / Software / CV / About / 404+sitemap）
+
+- **Task 8 Research 页**：新增 `src/components/ResearchContent.astro` + `src/pages/research.astro` + `src/pages/zh/research.astro`。按 `order` 排序渲染研究方向，关键词以小号无衬线呈现。
+- **Task 9 Software 页**：新增 `src/components/SoftwareContent.astro` + `src/pages/software.astro` + `src/pages/zh/software.astro`。每个软件一条：名称＋语言标签、一句话说明、可选安装命令（等宽块）、仓库/文档链接。
+- **Task 10 CV 与 About 页**：新增 `src/components/CvContent.astro`、`AboutContent.astro` 与四个语言路由（`/cv`、`/zh/cv`、`/about`、`/zh/about`）。CV 页给出中英两份 PDF 下载入口与四段履历时间线（空段不渲染标题）；About 页给出身份行、简介占位、联系方式。
+- **Task 11 404 / robots / sitemap**：新增 `src/pages/404.astro` 与 `public/robots.txt`；安装并注册 `@astrojs/sitemap`（3.7.4，devDependency 之外的正常依赖），构建产出 `sitemap-index.xml`。
+- **实现细节（与计划的差异）**：页面标题与空态文案一律走 `pick(locale, { en, zh })`，**不使用 `locale === 'zh' ? ... : ...` 三元**——与本项目「所有双语字符串经 `pick()`」的约束保持一致（Task 5 的 `LangSwitch` 是命名目标语言的 UI 提示，属例外，已单独裁定）。About 页对邮箱加了「非占位才渲染」守卫，避免 `mailto:TODO…` 死链（这与首页同源做法一致）。
+- **验收**：`pnpm build` **12 个页面**成功（`/`、`/zh/`、`/publications`、`/research`、`/zh/research`、`/software`、`/zh/software`、`/cv`、`/zh/cv`、`/about`、`/zh/about`、`404`）＋ `robots.txt` + `sitemap-index.xml`；`pnpm test` 25/25；`pnpm exec tsc --noEmit --incremental false` 干净；`dist/zh/publications` 不存在（确认 Publications 仅英文）；`grep -rn "content/" src/pages src/components` 仅命中 Publications 空态里的说明文字，无直接数据访问。
+- **外域引用核查**：产物中出现的远端地址只有 `example.invalid`（待定域名的 canonical 占位）、`github.com`（bioRtools 仓库）与 `lixiang117423.github.io`（既有博客）——均为普通 `<a>` 链接，**无任何远程字体/样式/脚本/图片引用**。
+- **执行方式说明**：Task 7–11 因连续会话中断改由控制端直接实现，独立评审仍照常派发（Task 7 已完成一轮评审并据其意见补上可视稿要求的题录页说明行）。这一调整已记入 ledger。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改。
+
 ## 2026-10-16 15:17 — Task 7 Publications 页完成
 
 - 新增 `src/pages/publications.astro`（仅英文，符合 spec §4.1：论文题录本来就是英文）。复用 Task 6 已建的 `PublicationList.astro`，未重复实现论文条目 markup。

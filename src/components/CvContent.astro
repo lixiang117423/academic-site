@@ -1,0 +1,74 @@
+---
+import { getCV } from '../lib/data-source';
+import { pick } from '../lib/i18n';
+import type { CvEntry, Locale } from '../lib/types';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const cv = await getCV();
+
+const sections: {
+  key: keyof typeof cv;
+  heading: { en: string; zh: string };
+}[] = [
+  { key: 'positions', heading: { en: 'Positions', zh: '工作经历' } },
+  { key: 'education', heading: { en: 'Education', zh: '教育经历' } },
+  { key: 'awards', heading: { en: 'Awards', zh: '获奖' } },
+  { key: 'talks', heading: { en: 'Talks', zh: '报告' } },
+];
+
+const renderPeriod = (entry: CvEntry) => `${entry.start}–${entry.end}`;
+---
+
+<h1>{pick(locale, { en: 'CV', zh: '简历' })}</h1>
+
+<p class="meta">
+  <a href="/cv/cv-en.pdf">Download CV (English, PDF)</a>
+  {' · '}
+  <a href="/cv/cv-zh.pdf">下载简历（中文，PDF）</a>
+</p>
+
+{sections.map((section) => {
+  const entries = cv[section.key] as CvEntry[];
+  return entries.length > 0 ? (
+    <>
+      <h2>{pick(locale, section.heading)}</h2>
+      <ul>
+        {entries.map((entry) => (
+          <li>
+            <span class="meta">{renderPeriod(entry)}</span>{' '}
+            <strong>{pick(locale, entry.title)}</strong>,{' '}
+            {pick(locale, entry.org)}
+            {entry.note && (
+              <span class="meta"> — {pick(locale, entry.note)}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </>
+  ) : null;
+})}
+
+<style>
+  h1 {
+    font-size: var(--step3);
+    margin-block: 3rem 0.5rem;
+  }
+
+  h2 {
+    font-size: var(--step2);
+    margin-block: 2.5rem 0.5rem;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  li {
+    margin-bottom: 0.4rem;
+  }
+</style>

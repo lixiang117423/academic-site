@@ -1,0 +1,64 @@
+---
+import { getSiteProfile } from '../lib/data-source';
+import { pick } from '../lib/i18n';
+import type { Locale } from '../lib/types';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const site = await getSiteProfile();
+
+const hasEmail = site.email.trim() !== '' && !site.email.startsWith('TODO');
+---
+
+<h1>{pick(locale, { en: 'About', zh: '关于' })}</h1>
+
+<p>
+  {pick(locale, site.name)} · {pick(locale, site.title)} · {pick(
+    locale,
+    site.affiliation
+  )}
+</p>
+
+<p>
+  {pick(locale, {
+    en: 'Biography pending.',
+    zh: '个人简介待补充。',
+  })}
+</p>
+
+<h2>{pick(locale, { en: 'Contact', zh: '联系方式' })}</h2>
+<ul>
+  {hasEmail && (
+    <li>
+      <a href={`mailto:${site.email}`}>{site.email}</a>
+    </li>
+  )}
+  {site.links.map((link) => (
+    <li>
+      <a href={link.url} rel="me noopener">{link.label}</a>
+    </li>
+  ))}
+  <li>
+    <a href={site.blog.url} rel="me noopener">{pick(locale, site.blog.label)}</a>
+  </li>
+</ul>
+
+<style>
+  h1 {
+    font-size: var(--step3);
+    margin-block: 3rem 1rem;
+  }
+
+  h2 {
+    font-size: var(--step2);
+    margin-block: 2.5rem 0.5rem;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+</style>
