@@ -22,6 +22,13 @@ const roleLabel: Record<Publication['authorRole'], string> = {
 const selfAuthorKeys = new Set(
   selfAuthors.map((author) => author.trim().toLowerCase())
 );
+
+// 标题整行可点：优先解析到 DOI（出版社页面），没有 DOI 时退回 url；
+// PDF / Code 仍单列在出处行，不与标题抢同一个目标。
+const rows = items.map((item) => ({
+  ...item,
+  titleHref: item.doi ? `https://doi.org/${item.doi}` : item.url,
+}));
 ---
 
 {
@@ -29,11 +36,17 @@ const selfAuthorKeys = new Set(
     <p class="meta">No publications yet.</p>
   ) : (
     <ul class="pubs" class:list={[{ compact }]}>
-      {items.map((item) => (
+      {rows.map((item) => (
         <li>
           <div class="year">{item.year}</div>
           <div>
-            <p class="pub-title">{item.title}</p>
+            <p class="pub-title">
+              {item.titleHref ? (
+                <a href={item.titleHref}>{item.title}</a>
+              ) : (
+                item.title
+              )}
+            </p>
             <p class="pub-authors">
               {item.authors.map((author, index) => (
                 <>
@@ -129,6 +142,21 @@ const selfAuthorKeys = new Set(
     margin: 0;
     font-weight: 600;
     line-height: 1.45;
+  }
+
+  /*
+   * 标题可点，但视觉上仍是「标题」而不是「链接」：沿用正文色、默认无下划线，
+   * hover / 键盘聚焦时才转强调色并加下划线（与导航项同一套交互语言）。
+   */
+  .pub-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .pub-title a:hover,
+  .pub-title a:focus-visible {
+    color: var(--accent);
+    text-decoration: underline;
   }
 
   .pub-authors {

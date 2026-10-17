@@ -2,6 +2,13 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-17 13:16 — 论文标题改为可点（指向 DOI）
+
+- **改动**：`src/components/PublicationList.astro` 里论文标题从纯文本改为链接——优先 `https://doi.org/<doi>`，没有 DOI 的条目退回 `url`；PDF / Code 仍单列在出处行，不抢同一个目标。首页「Selected publications」与 `/publications` 共用同一组件，两处同时生效。
+- **视觉处理（刻意不加"链接蓝"）**：标题沿用正文色、默认无下划线，仅 `hover` / `:focus-visible` 时转强调色 `#1E4E8C` 并加下划线，与导航项同一套交互语言，保持 spec §9.1「安静、可扫读」。出处行原来的 `DOI` 链接**保留**（与可视稿一致，也便于直接抄 DOI），因此单条里会有两个指向同一 DOI 的链接——如觉得冗余，删掉那行 `DOI` 即可。
+- **验收（构建产物实测）**：`pnpm exec tsc --noEmit --incremental false` 干净；`pnpm test` **40/40 PASS**；`pnpm build` 12 页；产物中 `/` 的 5 条标题、`/publications` 的 9 条标题**全部**为 `<a href="https://doi.org/…">`，去重后 DOI 数与题录数一致（5 / 9），无空标题；组件 scoped 样式已正确落进产物（`.pub-title a{color:inherit;text-decoration:none}` 与 `:hover/:focus-visible` 规则）。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改；未删除任何文件。
+
 ## 2026-10-16 16:04 — 部署上线：GitHub Pages 项目站点
 
 - **决策**：托管平台定为 **GitHub Pages 项目站点**（用户 2026-10-16 明确要境外托管、不想走备案）。账号根域名 `lixiang117423.github.io` 已被既有 Hexo 博客占用，所以本站只能落在子路径下。仓库 <https://github.com/lixiang117423/academic-site>（public）· 线上 <https://lixiang117423.github.io/academic-site/>。
