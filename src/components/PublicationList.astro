@@ -1,5 +1,6 @@
 ---
 import type { Locale, Publication } from '../lib/types';
+import { isExternal } from '../lib/links';
 
 interface Props {
   items: Publication[];
@@ -42,7 +43,13 @@ const rows = items.map((item) => ({
           <div>
             <p class="pub-title">
               {item.titleHref ? (
-                <a href={item.titleHref}>{item.title}</a>
+                <a
+                  href={item.titleHref}
+                  target={isExternal(item.titleHref) ? '_blank' : undefined}
+                  rel="noopener"
+                >
+                  {item.title}
+                </a>
               ) : (
                 item.title
               )}
@@ -71,6 +78,8 @@ const rows = items.map((item) => ({
                       {' · '}
                       <a
                         href={`https://doi.org/${item.doi}`}
+                        target="_blank"
+                        rel="noopener"
                         aria-label={`DOI for ${item.title}`}
                       >
                         DOI
@@ -80,7 +89,12 @@ const rows = items.map((item) => ({
                   {item.pdf && (
                     <>
                       {' · '}
-                      <a href={item.pdf} aria-label={`PDF for ${item.title}`}>
+                      <a
+                        href={item.pdf}
+                        target={isExternal(item.pdf) ? '_blank' : undefined}
+                        rel="noopener"
+                        aria-label={`PDF for ${item.title}`}
+                      >
                         PDF
                       </a>
                     </>
@@ -88,7 +102,12 @@ const rows = items.map((item) => ({
                   {item.code && (
                     <>
                       {' · '}
-                      <a href={item.code} aria-label={`Code for ${item.title}`}>
+                      <a
+                        href={item.code}
+                        target={isExternal(item.code) ? '_blank' : undefined}
+                        rel="noopener"
+                        aria-label={`Code for ${item.title}`}
+                      >
                         Code
                       </a>
                     </>

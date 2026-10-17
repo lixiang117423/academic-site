@@ -2,6 +2,7 @@
 import { getSiteProfile, listPublications } from '../lib/data-source';
 import { pick } from '../lib/i18n';
 import { href } from '../lib/base';
+import { isExternal } from '../lib/links';
 import type { Locale } from '../lib/types';
 import PublicationList from './PublicationList.astro';
 
@@ -36,7 +37,11 @@ const hasLinks = site.links.length > 0;
       ].map((item, index) => (
         <>
           {index > 0 && ' · '}
-          <a href={item.href} rel="me noopener">
+          <a
+            href={item.href}
+            target={isExternal(item.href) ? '_blank' : undefined}
+            rel="me noopener"
+          >
             {item.label}
           </a>
         </>
@@ -64,7 +69,11 @@ const hasLinks = site.links.length > 0;
       <ul class="notes">
         {site.featuredPosts.map((post) => (
           <li>
-            <a href={post.url} rel="noopener">
+            <a
+              href={post.url}
+              target={isExternal(post.url) ? '_blank' : undefined}
+              rel="noopener"
+            >
               {post.title}
             </a>
             <span class="meta"> · {post.date}</span>

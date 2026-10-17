@@ -1,6 +1,7 @@
 ---
 import { getSiteProfile } from '../lib/data-source';
 import { pick } from '../lib/i18n';
+import { isExternal } from '../lib/links';
 import type { Locale } from '../lib/types';
 
 interface Props {
@@ -35,7 +36,11 @@ const year = new Date().getFullYear();
       contactItems.map((item, index) => (
         <>
           {index > 0 && ' · '}
-          <a href={item.href} rel={item.rel}>
+          <a
+            href={item.href}
+            target={isExternal(item.href) ? '_blank' : undefined}
+            rel={item.rel}
+          >
             {item.label}
           </a>
         </>

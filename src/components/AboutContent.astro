@@ -3,6 +3,7 @@ import { getSiteProfile } from '../lib/data-source';
 import { pick } from '../lib/i18n';
 import { emphasis } from '../lib/rich-text';
 import { href } from '../lib/base';
+import { isExternal } from '../lib/links';
 import type { Locale } from '../lib/types';
 
 interface Props {
@@ -53,11 +54,23 @@ const avatarAlt = pick(locale, {
   )}
   {site.links.map((link) => (
     <li>
-      <a href={link.url} rel="me noopener">{link.label}</a>
+      <a
+        href={link.url}
+        target={isExternal(link.url) ? '_blank' : undefined}
+        rel="me noopener"
+      >
+        {link.label}
+      </a>
     </li>
   ))}
   <li>
-    <a href={site.blog.url} rel="me noopener">{pick(locale, site.blog.label)}</a>
+    <a
+      href={site.blog.url}
+      target={isExternal(site.blog.url) ? '_blank' : undefined}
+      rel="me noopener"
+    >
+      {pick(locale, site.blog.label)}
+    </a>
   </li>
 </ul>
 

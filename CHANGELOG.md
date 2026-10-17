@@ -2,6 +2,13 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-10-17 13:22 — 外链改为新标签打开（不动当前页）
+
+- **规则**：新增 `src/lib/links.ts` 的 `isExternal()`——只有 `http(s)` 绝对地址算外链，统一用 `target={isExternal(url) ? '_blank' : undefined}` 并配 `rel="noopener"`（防新标签页经 `window.opener` 反向操作当前页）。**站内链接保持同页跳转**（站内路径都由 `href()` 产出相对路径），**`mailto:` 也不新开**（打开的是邮件客户端）。
+- **覆盖范围**：`PublicationList`（标题、DOI、PDF、Code）、`SiteNav`（Blog）、`SiteFooter`（GitHub / Scholar / Blog）、`HomeContent`（联系方式、最新笔记）、`AboutContent`（社交链接、Blog）、`SoftwareContent`（Repository / Docs）；另外**两份 CV PDF** 也改为新标签打开（它们是站内文件，但用户明确"不动当前页面"，PDF 用新标签更符合预期）。
+- **验收（构建产物逐条扫描，不是抽样）**：`pnpm exec tsc --noEmit --incremental false` 干净；`pnpm test` **43/43 PASS**（新增 `tests/links.test.ts` 3 例）；`pnpm build` 12 页；对 12 个页面的**全部 `<a>` 标签**做程序化核对——外链 **126 个全部**带 `target="_blank"` 且都带 `noopener`；站内仅 4 个带 `target`（中英各一份 CV PDF ×2）且都是 PDF；`mailto:` 共 16 处（页脚 + 首页联系方式）**无一**新开；问题数 **0**。
+- 未改动既有站点：`hexo/` 与 `lixiang117423.github.io/` 均未修改；未删除任何文件。
+
 ## 2026-10-17 13:16 — 论文标题改为可点（指向 DOI）
 
 - **改动**：`src/components/PublicationList.astro` 里论文标题从纯文本改为链接——优先 `https://doi.org/<doi>`，没有 DOI 的条目退回 `url`；PDF / Code 仍单列在出处行，不抢同一个目标。首页「Selected publications」与 `/publications` 共用同一组件，两处同时生效。

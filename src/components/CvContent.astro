@@ -27,9 +27,13 @@ const renderPeriod = (entry: CvEntry) => `${entry.start}–${entry.end}`;
 <h1>{pick(locale, { en: 'CV', zh: '简历' })}</h1>
 
 <p class="meta">
-  <a href={href('/cv/cv-en.pdf')}>Download CV (English, PDF)</a>
+  <a href={href('/cv/cv-en.pdf')} target="_blank" rel="noopener"
+    >Download CV (English, PDF)</a
+  >
   {' · '}
-  <a href={href('/cv/cv-zh.pdf')}>下载简历（中文，PDF）</a>
+  <a href={href('/cv/cv-zh.pdf')} target="_blank" rel="noopener"
+    >下载简历（中文，PDF）</a
+  >
 </p>
 
 {sections.map((section) => {

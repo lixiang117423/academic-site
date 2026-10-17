@@ -1,6 +1,7 @@
 ---
 import { listSoftware } from '../lib/data-source';
 import { pick } from '../lib/i18n';
+import { isExternal } from '../lib/links';
 import type { Locale } from '../lib/types';
 
 interface Props {
@@ -28,8 +29,27 @@ const items = await listSoftware();
     <p>{pick(locale, item.tagline)}</p>
     {item.install && <pre><code>{item.install}</code></pre>}
     <p class="meta">
-      <a href={item.repo} rel="noopener">Repository</a>
-      {item.docs && <> · <a href={item.docs} rel="noopener">Docs</a></>}
+      <a
+        href={item.repo}
+        target={isExternal(item.repo) ? '_blank' : undefined}
+        rel="noopener"
+      >
+        Repository
+      </a>
+      {
+        item.docs && (
+          <>
+            {' · '}
+            <a
+              href={item.docs}
+              target={isExternal(item.docs) ? '_blank' : undefined}
+              rel="noopener"
+            >
+              Docs
+            </a>
+          </>
+        )
+      }
     </p>
   </article>
 ))}

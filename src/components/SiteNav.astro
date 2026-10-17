@@ -2,6 +2,7 @@
 import { getSiteProfile } from '../lib/data-source';
 import { pick } from '../lib/i18n';
 import { href, stripBase } from '../lib/base';
+import { isExternal } from '../lib/links';
 import type { Locale } from '../lib/types';
 import LangSwitch from './LangSwitch.astro';
 
@@ -50,7 +51,13 @@ const isCurrent = (path: string) =>
         ))
       }
       <li>
-        <a href={site.blog.url} rel="me noopener">{pick(locale, site.blog.label)}</a>
+        <a
+          href={site.blog.url}
+          target={isExternal(site.blog.url) ? '_blank' : undefined}
+          rel="me noopener"
+        >
+          {pick(locale, site.blog.label)}
+        </a>
       </li>
     </ul>
     <LangSwitch locale={locale} currentPath={currentPath} />
