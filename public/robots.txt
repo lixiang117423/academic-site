@@ -1,4 +1,2 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://lixiang117423.github.io/academic-site/sitemap-index.xml

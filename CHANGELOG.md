@@ -2,6 +2,16 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-11-19 09:23 — 腾讯云部署与 GitHub 双端同步发布
+
+- **线上地址**：腾讯云 <http://134.175.142.146/>，网站目录 `/home/ubuntu/my_web`；GitHub Pages 原地址 <https://lixiang117423.github.io/academic-site/> 保留。
+- **构建拆分**：`astro.config.mjs` 改为读取 `SITE_URL` / `SITE_BASE`。默认 `pnpm build` 仍产 GitHub 子路径版（`/academic-site`）；新增 `pnpm build:tencent` 产腾讯云根路径版（`SITE_BASE=/`、`SITE_URL=http://134.175.142.146`）。本地已分别构建并核对：GitHub 版站内链接带 `/academic-site`，腾讯云版站内链接为根路径且残留 `/academic-site` 引用数为 0；canonical、sitemap 均指向 IP 根站点。
+- **腾讯云 Nginx**：新增 `/etc/nginx/sites-available/academic-site` 并在 `sites-enabled` 启用，以 `server_name 134.175.142.146` 精确匹配 IP，root 指向 `/home/ubuntu/my_web`。未覆盖或删除原 `default` 配置；原 `my_home` 应用仍在 `http://134.175.142.146:8000/`。
+- **SSH 别名**：本机 `~/.ssh/config` 新增 `Host tsy`，等同腾讯云 Ubuntu 服务器；`ssh tsy` 实测可用。为 GitHub Actions 生成专用 ed25519 key（`~/.ssh/txy_github_actions_ed25519`），公钥已追加至服务器 `authorized_keys` 并实测登录成功；私钥未写入仓库。
+- **GitHub Actions**：`.github/workflows/deploy.yml` 在同一次 push `main` 中分别构建 GitHub Pages 版与腾讯云版；Pages 继续用官方 deploy action，腾讯云用 `rsync` 同步到 `/home/ubuntu/my_web`（不使用 `--delete`）。仓库 Secrets 已配置 `TENCENT_HOST`、`TENCENT_USER`、`TENCENT_SSH_KEY`、`TENCENT_KNOWN_HOSTS`。
+- **本地验收**：`tsc --noEmit` 退出码 0；`pnpm test` 43/43 PASS；两种目标均完成 12 页构建。首轮 rsync 后公网探活：`/`、`/zh/`、`/favicon.svg`、`/avatar.jpg`、`/cv/cv-en.pdf`、`/robots.txt`、`/sitemap-index.xml` 为 200；`/about`、`/research`、`/publications`、`/software`、`/cv` 经 Nginx 补斜杠后均为 200。
+- **待验证**：本提交推送到 `main` 后，观察 Actions 两个发布任务的实际结果；成功前不把云端 CI 发布视为最终完成。
+
 ## 2026-10-17 13:22 — 外链改为新标签打开（不动当前页）
 
 - **规则**：新增 `src/lib/links.ts` 的 `isExternal()`——只有 `http(s)` 绝对地址算外链，统一用 `target={isExternal(url) ? '_blank' : undefined}` 并配 `rel="noopener"`（防新标签页经 `window.opener` 反向操作当前页）。**站内链接保持同页跳转**（站内路径都由 `href()` 产出相对路径），**`mailto:` 也不新开**（打开的是邮件客户端）。

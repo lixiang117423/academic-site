@@ -1,6 +1,6 @@
-name: Deploy to GitHub Pages
+name: Deploy to GitHub Pages and Tencent Cloud
 
-# 推到 main 即构建并发布；也可在 Actions 页面手动触发
+# 推到 main 即构建并同步发布到 GitHub Pages 与腾讯云；也可在 Actions 页面手动触发
 on:
   push:
     branches: [main]
@@ -31,11 +31,22 @@ jobs:
       - run: pnpm install --frozen-lockfile
       # 内容 schema / i18n / base 前缀等单测，防止带着坏内容发布
       - run: pnpm test
-      - run: pnpm build
+      - name: Build GitHub Pages site
+        run: pnpm build
+      - name: Build Tencent Cloud root-path site
+        run: |
+          mv dist dist-github
+          pnpm build:tencent
+          mv dist dist-tencent
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: dist-github
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tencent-site
+          path: dist-tencent
+          if-no-files-found: error
 
   deploy:
     needs: build
@@ -46,3 +57,32 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  deploy-tencent:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: tencent-site
+          path: tencent-site
+      - name: Configure SSH
+        env:
+          TENCENT_SSH_KEY: ${{ secrets.TENCENT_SSH_KEY }}
+          TENCENT_KNOWN_HOSTS: ${{ secrets.TENCENT_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$TENCENT_SSH_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$TENCENT_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
+      - name: Sync static site to Tencent Cloud
+        env:
+          TENCENT_HOST: ${{ secrets.TENCENT_HOST }}
+          TENCENT_USER: ${{ secrets.TENCENT_USER }}
+        run: |
+          rsync -az --checksum --chmod=D755,F644 \
+            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes" \
+            tencent-site/ "$TENCENT_USER@$TENCENT_HOST:/home/ubuntu/my_web/"
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes \
+            "$TENCENT_USER@$TENCENT_HOST" \
+            'test -s /home/ubuntu/my_web/index.html'
