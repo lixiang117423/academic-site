@@ -22,7 +22,7 @@
 
 **GitHub Pages（2026-10-16）**：<https://lixiang117423.github.io/academic-site/> · 仓库 <https://github.com/lixiang117423/academic-site>。账号根域名已被既有 Hexo 博客占用，因此本站落到 `/academic-site/` 子路径。
 
-**腾讯云（2026-11-19）**：<http://134.175.142.146/>，服务器目录 `/home/ubuntu/my_web`，Nginx 直接提供静态文件。推送到 `main` 后，`.github/workflows/deploy.yml` 会分别构建 GitHub Pages 子路径版和腾讯云根路径版，并同时发布两端。
+**腾讯云（2026-11-19）**：<http://134.175.142.146/web/>，服务器目录 `/home/ubuntu/my_web`，Nginx 只在 `/web/` 路径提供该静态站；根路径继续留给 `my_home` 等其他应用。推送到 `main` 后，`.github/workflows/deploy.yml` 会分别构建 GitHub Pages 子路径版和腾讯云 `/web/` 版，并同时发布两端。
 
 **待定**：域名（托管平台已定 GitHub Pages，境外托管不需要备案）。将来绑定自定义域、站点落到域名根路径时，把 `astro.config.mjs` 的 `site` 换成域名并删掉 `base` 一行即可——站内链接会随 `base` 自动跟随（见 `src/lib/base.ts`）。
 
@@ -48,7 +48,7 @@ pnpm install
 pnpm dev        # 本地预览
 pnpm preview    # 预览 dist/ 构建产物（部署前的真实产物）
 pnpm build      # 产出 dist/
-pnpm build:tencent  # 产出腾讯云根路径版 dist/
+pnpm build:tencent  # 产出腾讯云 /web/ 路径版 dist/
 pnpm deploy:tencent # 测试、构建并 rsync 到腾讯云（需 ssh tsy 可用）
 pnpm test       # vitest（schema / i18n / 数据选择）
 ```
@@ -67,7 +67,7 @@ Python 数据管道（需 `/Users/lixiang/miniforge3/envs/python/bin/python3`）
 
 - 正常更新：提交并推送到 `main`，GitHub Actions 同时发布 GitHub Pages 与腾讯云。
 - 临时手动发布腾讯云：`pnpm deploy:tencent`。
-- 两种部署的差别只在 `site` / `base`：GitHub 用 `/academic-site/`，腾讯云用站点根路径 `/`；页面代码中的站内链接统一经 `src/lib/base.ts` 处理。
+- 两种部署的差别只在 `site` / `base`：GitHub 用 `/academic-site/`，腾讯云用 `/web/`；页面代码中的站内链接统一经 `src/lib/base.ts` 处理。
 - 腾讯云发布依赖仓库 Secrets：`TENCENT_HOST`、`TENCENT_USER`、`TENCENT_SSH_KEY`、`TENCENT_KNOWN_HOSTS`。
 
 ## 两条硬约束

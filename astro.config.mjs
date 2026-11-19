@@ -11,8 +11,8 @@ const base = rawBase === '/'
 
 export default defineConfig({
   output: 'static',
-  // 默认构建用于 GitHub Pages 项目站点；腾讯云根路径部署时设置
-  // SITE_URL=http://134.175.142.146 SITE_BASE=/。
+  // 默认构建用于 GitHub Pages 项目站点；腾讯云部署在 /web/ 子路径时设置
+  // SITE_URL=http://134.175.142.146 SITE_BASE=/web。
   site,
   ...(base ? { base } : {}),
   trailingSlash: 'ignore',

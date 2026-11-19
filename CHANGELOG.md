@@ -2,9 +2,16 @@
 
 > 时间取本机真实时钟（Asia/Shanghai），格式 `YYYY-MM-DD HH:MM`，倒序记录。
 
+## 2026-11-19 09:34 — 修正腾讯云路径：学术主页固定为 `/web/`
+
+- **用户约束**：`http://134.175.142.146/` 与 `/home` 等路径属于既有应用，学术主页只能在 `http://134.175.142.146/web/`，不得占用根路径。上一条按根路径部署的方案作废。
+- **Nginx**：恢复 `default` 为 IP 的默认站点，根路径继续反代 `127.0.0.1:8000` 的 `my_home`，`/home`、`/wrky/` 原规则保留；新增 `/web` → `/web/` 跳转及 `/web/` → `/home/ubuntu/my_web/` 的静态映射。原独立 `academic-site` server 块已停用，文件保留备查。
+- **构建**：腾讯云目标改为 `SITE_BASE=/web`、`SITE_URL=http://134.175.142.146`，使站内链接、canonical 与 sitemap 全部落在 `/web/` 下。
+- **本地/线上验证**：待重新构建并推送后核验根路径仍为原应用、`/web/` 页面与内页均为 200，且页面内不再出现指向根路径的误链接。
+
 ## 2026-11-19 09:23 — 腾讯云部署与 GitHub 双端同步发布
 
-- **线上地址**：腾讯云 <http://134.175.142.146/>，网站目录 `/home/ubuntu/my_web`；GitHub Pages 原地址 <https://lixiang117423.github.io/academic-site/> 保留。
+- **线上地址**：腾讯云 <http://134.175.142.146/>，网站目录 `/home/ubuntu/my_web`；GitHub Pages 原地址 <https://lixiang117423.github.io/academic-site/> 保留。（该根路径方案已于 09:34 修正为 `/web/`）
 - **构建拆分**：`astro.config.mjs` 改为读取 `SITE_URL` / `SITE_BASE`。默认 `pnpm build` 仍产 GitHub 子路径版（`/academic-site`）；新增 `pnpm build:tencent` 产腾讯云根路径版（`SITE_BASE=/`、`SITE_URL=http://134.175.142.146`）。本地已分别构建并核对：GitHub 版站内链接带 `/academic-site`，腾讯云版站内链接为根路径且残留 `/academic-site` 引用数为 0；canonical、sitemap 均指向 IP 根站点。
 - **腾讯云 Nginx**：新增 `/etc/nginx/sites-available/academic-site` 并在 `sites-enabled` 启用，以 `server_name 134.175.142.146` 精确匹配 IP，root 指向 `/home/ubuntu/my_web`。未覆盖或删除原 `default` 配置；原 `my_home` 应用仍在 `http://134.175.142.146:8000/`。
 - **SSH 别名**：本机 `~/.ssh/config` 新增 `Host tsy`，等同腾讯云 Ubuntu 服务器；`ssh tsy` 实测可用。为 GitHub Actions 生成专用 ed25519 key（`~/.ssh/txy_github_actions_ed25519`），公钥已追加至服务器 `authorized_keys` 并实测登录成功；私钥未写入仓库。

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "build:tencent": "SITE_BASE=/ SITE_URL=http://134.175.142.146 astro build",
+    "build:tencent": "SITE_BASE=/web SITE_URL=http://134.175.142.146 astro build",
     "deploy:tencent": "bash scripts/deploy-tencent.sh",
     "preview": "astro preview",
     "test": "vitest run"

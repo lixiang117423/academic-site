@@ -51,8 +51,8 @@
 
 ## 待确认事项
 
-- **托管平台**：**双端发布（2026-11-19）**——GitHub Pages 项目站点 <https://lixiang117423.github.io/academic-site/>，腾讯云根站点 <http://134.175.142.146/>（服务器目录 `/home/ubuntu/my_web`，`ssh tsy` 访问）。发布流水线为 `.github/workflows/deploy.yml`：push `main` → 测试 → 分别构建 GitHub 子路径版与腾讯云根路径版 → 同时发布两端。
-- **构建路径**：默认 `pnpm build` 使用 `SITE_BASE=/academic-site`、`SITE_URL=https://lixiang117423.github.io`；腾讯云用 `pnpm build:tencent`（`SITE_BASE=/`、`SITE_URL=http://134.175.142.146`）。站内绝对链接仍必须走 `src/lib/base.ts` 的 `href()`。
-- **域名**：待定。当前腾讯云使用 IP 根路径；将来绑定域名时用 `SITE_URL` / `SITE_BASE` 覆盖构建参数，不用改页面组件。
+- **托管平台**：**双端发布（2026-11-19）**——GitHub Pages 项目站点 <https://lixiang117423.github.io/academic-site/>，腾讯云子路径站点 <http://134.175.142.146/web/>（服务器目录 `/home/ubuntu/my_web`，`ssh tsy` 访问）。发布流水线为 `.github/workflows/deploy.yml`：push `main` → 测试 → 分别构建 GitHub 子路径版与腾讯云 `/web/` 版 → 同时发布两端。
+- **构建路径**：默认 `pnpm build` 使用 `SITE_BASE=/academic-site`、`SITE_URL=https://lixiang117423.github.io`；腾讯云用 `pnpm build:tencent`（`SITE_BASE=/web`、`SITE_URL=http://134.175.142.146`）。站内绝对链接仍必须走 `src/lib/base.ts` 的 `href()`。
+- **根路径约束**：`http://134.175.142.146/` 与 `/home` 等路径属于既有应用，不得被学术主页占用；Nginx 只把 `/web/` 映射到 `/home/ubuntu/my_web`。
 - **站点展示信息**：**已填（2026-10-16）**，取值与来源逐条登记在 `CHANGELOG.md` 同时间条目。ORCID 未检索到公开记录（用户称有 Google Scholar，按本机 Arc 浏览历史定位并写入 `content/site.yaml`）。
 - **坚果云排除项**：`node_modules/`、`dist/`、`.astro/` 的具体排除入口以客户端为准。
